@@ -1,5 +1,27 @@
+"""
+Usage:
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME]
+  wepwawet -h
+  wepwawet (--version | -V)
+  
+Options:
+  -h --help                       show this help message and exit
+  -t --target                     set target (comma separated, no spaces, if multiple)
+  -f --file                       set target (reads from file, one domain per line)
+  -o --output                     save to filename
+  -i --additional-info            show additional information about the host from Shodan (requires API key)
+  -S --silent                     only output subdomains, one per line
+  -v --verbose                    print debug info and full request output
+  -V --version                    show version and exit
+Help:
+  For help using this tool, please open an issue on the Github repository:
+  https://github.com/JaufreLallement/Wepwawet
+"""
+
 from wepwawet.scanners.lookup import nslookup
 from wepwawet.scanners.shodan import ask_shodan
+
+from docopt import docopt
 
 def main():
 
@@ -16,13 +38,3 @@ def main():
                          888                                                           
                          888                                                           
   """)
-  with open(path, encoding='utf-8') as f: lines = f.readlines()
-  res = []
-
-  for url in lines:
-    ip = nslookup(url)
-    shodan_infos = ask_shodan(ip)
-    prop = {
-      "url": url,
-      "ip": ip
-    }
