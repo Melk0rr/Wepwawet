@@ -1,8 +1,9 @@
+import socket
 import shodan
 
 from utils.color_print import ColorPrint
 
-def ask_shodan(ip):
+def ask_shodan(target):
   print("Asking Shodan.io for additional information...")
 
   try:
@@ -13,7 +14,7 @@ def ask_shodan(ip):
 
   api = shodan.Shodan(SHODAN_KEY)
   try:
-    res = api.host(ip)
+    res = api.host(socket.gethostbyname(target))
     return res
   except Exception as e:
     ColorPrint.red(f"Error while retreiving shodan informations: {e}")
