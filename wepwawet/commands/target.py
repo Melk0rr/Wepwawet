@@ -43,8 +43,7 @@ class Target(Base):
       self.options["TARGET"][i] = host
 
       try:
-        ip_str = socket.gethostbyname(host)
-        ColorPrint.green(f"Searching for subdomains for {ip_str} ({host})")
+        ip = socket.gethostbyname(host)
+        ColorPrint.green(f"Gathering data for {ip} ({host})")
       except Exception as e:
-        self.handle_exception(e,
-                              "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
+        self.handle_exception(e, "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
