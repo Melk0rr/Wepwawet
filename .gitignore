@@ -1,6 +1,15 @@
 # Pycache and compiled python files.
 __pycache__/
 *py[cod]
+.pytest_cache/
 
 # Custom data
 *.txt
+
+# Distribution / packaging
+.Python
+build/
+
+
+*.egg-info
+.eggs/
