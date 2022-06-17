@@ -4,22 +4,24 @@ import socket
 import sys
 from urllib.parse import urlsplit
 
-from wepwawet.scanners.shodan import ask_shodan
-from wepwawet.utils.color_print import ColorPrint
 from .base import Base
+from wepwawet.utils.color_print import ColorPrint
+from wepwawet.utils.dictionary_join import join_dictionary
+from wepwawet.scanners.shodan import ask_shodan
 
-"""Main enumeration module"""
+'''Main enumeration module'''
 class Target(Base):
 
   urls = list()
 
   def handle_exception(self, e, message=""):
-    if self.options["--verbose"]: print(e)
-    if message: ColorPrint.red(message)
+    if self.options["--verbose"]:
+      print(e)
+    if message:
+      ColorPrint.red(message)
 
 
   def init(self):
-
     # If user set file option: define target with file content
     if self.options["FILE"]:
       full_path = os.path.join(os.getcwd(), self.options["FILE"])
@@ -39,11 +41,25 @@ class Target(Base):
 
       parsed = urlsplit(url)
       host = parsed.netloc
-
-      self.options["TARGET"][i] = host
+      target = { 'host': host }
 
       try:
         ip = socket.gethostbyname(host)
+        target['ip'] = ip
         ColorPrint.green(f"Gathering data for {ip} ({host})")
       except Exception as e:
         self.handle_exception(e, "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
+
+      self.options["TARGET"][i] = target
+
+  
+  def run(self):
+    # Retreive IP of target and run initial configuration
+    self.init()
+
+    for i in range(len(self.options["TARGET"])):
+      target = self.options["TARGET"][i]
+      ask_shodan(self, target)
+
+    for url in self.urls:
+      ColorPrint.green(join_dictionary(url, ', '))
