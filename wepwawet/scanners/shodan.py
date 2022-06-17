@@ -1,9 +1,13 @@
-import socket
 import shodan
 
-from utils.color_print import ColorPrint
+from wepwawet.utils.color_print import ColorPrint
 
-def ask_shodan(self):
+sho_props = ['city', 'country_name', 'domains', 'isp', 'org', 'ports']
+
+'''
+Main shodan function : Emit request to shodan via API
+'''
+def ask_shodan(self, target):
   print("Asking Shodan.io for additional information...")
 
   try:
@@ -13,11 +17,14 @@ def ask_shodan(self):
     return
 
   api = shodan.Shodan(SHODAN_KEY)
-  for i in range(len(self.options["TARGET"])):
-    try:
-      res = api.host(socket.gethostbyname(self.options["TARGET"][i]))
-      self.urls.append({
-        ""
-      })
-    except Exception as e:
-      self.handle_exception(e, "Error while retreiving shodan informations")
+
+  try:
+    # Asking shodan for the specified IP address
+    if (target['ip']):
+      sho_req = api.host(target['ip'])
+      sho_less = {x:sho_req[x] for x in sho_props}
+
+    res = { **target, **sho_less }
+    self.urls.append(res)
+  except Exception as e:
+    self.handle_exception(e, "Error while retreiving shodan informations")
