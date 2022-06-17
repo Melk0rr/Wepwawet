@@ -26,7 +26,8 @@ setup(
                 'Operating System :: OS Independent',
                 'Programming Language :: Python :: 3.10', ],
   keywords='cli',
-  packages=find_packages(exclude=['docs', 'tests*']),
+  packages=find_packages(exclude=['docs', 'tests*']), python_requires='>=3',
   install_requires=[reqs],
   entry_points={'console_scripts': ['wepwawet=wepwawet.cli:main', ], },
+  py_modules=["wepwawet.utils", "wepwawet.scanners"],
 )
