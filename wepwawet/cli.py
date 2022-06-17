@@ -9,7 +9,6 @@ Options:
   -t --target                     set target (comma separated, no spaces, if multiple)
   -f --file                       set target (reads from file, one domain per line)
   -o --output                     save to filename
-  -i --additional-info            show additional information about the host from Shodan (requires API key)
   -S --silent                     only output subdomains, one per line
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
@@ -25,9 +24,9 @@ from docopt import docopt
 from wepwawet.banner import banner
 from wepwawet.utils.convertions import seconds_to_str
 from wepwawet.utils.color_print import ColorPrint
+import wepwawet.commands
 
 from . import __version__ as VERSION
-
 
 def main():
 
@@ -51,6 +50,9 @@ def main():
       return
 
     print(banner)
+
+    command = wepwawet.commands.Target(options)
+    command.run()
 
     print("Urls infos search took %s" % seconds_to_str(time.time() - start_time))
   except KeyboardInterrupt:
