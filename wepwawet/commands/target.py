@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from .base import Base
 from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.dictionary_join import join_dictionary
+from wepwawet.utils.dictionary_join import join_dictionary_values
 from wepwawet.scanners.shodan import ask_shodan
 
 '''Main enumeration module'''
@@ -60,4 +60,4 @@ class Target(Base):
 
     ColorPrint.green(', '.join([*self.urls[0]]))
     for url in self.urls:
-      ColorPrint.green(', '.join([*url.values()]))
+      ColorPrint.green(join_dictionary_values(url, ', '))
