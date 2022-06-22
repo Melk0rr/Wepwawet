@@ -60,4 +60,4 @@ class Target(Base):
 
     ColorPrint.green(', '.join([*self.urls[0]]))
     for url in self.urls:
-      ColorPrint.green(join_dictionary(url, ', '))
+      ColorPrint.green(', '.join([*url.values()]))
