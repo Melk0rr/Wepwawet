@@ -41,25 +41,23 @@ class Target(Base):
 
       parsed = urlsplit(url)
       host = parsed.netloc
-      target = { 'host': host }
+      ip = None
 
       try:
         ip = socket.gethostbyname(host)
-        target['ip'] = ip
         ColorPrint.green(f"Gathering data for {ip} ({host})")
       except Exception as e:
         self.handle_exception(e, "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
 
-      self.options["TARGET"][i] = target
+      self.options["TARGET"][i] = { 'host': host, 'ip': ip }
 
   
   def run(self):
     # Retreive IP of target and run initial configuration
     self.init()
 
-    for i in range(len(self.options["TARGET"])):
-      target = self.options["TARGET"][i]
-      ask_shodan(self, target)
+    ask_shodan(self)
 
+    ColorPrint.green(', '.join([*self.urls]))
     for url in self.urls:
       ColorPrint.green(join_dictionary(url, ', '))
