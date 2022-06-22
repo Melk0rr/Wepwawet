@@ -7,7 +7,7 @@ sho_props = ['city', 'country_name', 'domains', 'isp', 'org', 'ports']
 '''
 Main shodan function : Emit request to shodan via API
 '''
-def ask_shodan(self, target):
+def ask_shodan(self):
   print("Asking Shodan.io for additional information...")
 
   try:
@@ -18,13 +18,16 @@ def ask_shodan(self, target):
 
   api = shodan.Shodan(SHODAN_KEY)
 
-  try:
-    # Asking shodan for the specified IP address
-    if (target['ip']):
-      sho_req = api.host(target['ip'])
-      sho_less = {x:sho_req[x] for x in sho_props}
+  for i in range(len(self.options["TARGET"])):
+    target = self.options["TARGET"][i]
 
-    res = { **target, **sho_less }
-    self.urls.append(res)
-  except Exception as e:
-    self.handle_exception(e, "Error while retreiving shodan informations")
+    try:
+      # Asking shodan for the specified IP address
+      if (target['ip']):
+        sho_req = api.host(target['ip'])
+
+      sho_res = {x:sho_req[x] if sho_req else None for x in sho_props}
+
+      self.urls.append({ **target, **sho_res })
+    except Exception as e:
+      self.handle_exception(e, "Error while retreiving shodan informations")
