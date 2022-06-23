@@ -41,8 +41,6 @@ def main():
 
     options = docopt(__doc__, version=VERSION)
 
-    print(options)
-
     if options["--output"] or options["--silent"]:
       sys.stdout = StdOutHook(options["FILENAME"], options["--silent"],
                               options["--output"])
