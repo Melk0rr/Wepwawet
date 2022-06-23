@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSv]
   wepwawet -h
   wepwawet (--version | -V)
   
@@ -12,6 +12,7 @@ Options:
   -S --silent                     only output subdomains, one per line
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
+
 Help:
   For help using this tool, please open an issue on the Github repository:
   https://github.com/JaufreLallement/Wepwawet
@@ -40,16 +41,18 @@ def main():
 
     options = docopt(__doc__, version=VERSION)
 
-    if options["--output"] or options['--silent']:
-      sys.stdout = StdOutHook(options["FILENAME"], options['--silent'],
-                              options['--output'])
+    print(options)
 
-    if not options["--target"] and not options['--file']:
+    if options["--output"] or options["--silent"]:
+      sys.stdout = StdOutHook(options["FILENAME"], options["--silent"],
+                              options["--output"])
+
+    if not options["--target"] and not options["--file"]:
       ColorPrint.red(
         "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required")
       return
 
-    if options["--target"] and options['--file']:
+    if options["--target"] and options["--file"]:
       ColorPrint.red(
         "Please only supply one target method - either read by file with -f or as an argument to -t, not both.")
       return
