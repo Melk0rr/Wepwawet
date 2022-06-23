@@ -41,8 +41,7 @@ def main():
     options = docopt(__doc__, version=VERSION)
 
     if options["--output"] or options['--silent']:
-      sys.stdout = StdOutHook(options["FILENAME"], options['--silent'],
-                              options['--output'])
+      sys.stdout = StdOutHook(options["FILENAME"], options['--silent'], options['--output'])
 
     if not options["--target"] and not options['--file']:
       ColorPrint.red(
