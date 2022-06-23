@@ -13,7 +13,7 @@ def ask_shodan(self):
   try:
     from wepwawet.API import SHODAN_KEY
   except:
-    ColorPrint.red("Unable to import API key - make sure API.py exists!")
+    self.handle_exception(e, "Unable to import API key - make sure API.py exists!")
     return
 
   api = shodan.Shodan(SHODAN_KEY)
@@ -26,8 +26,8 @@ def ask_shodan(self):
       if (target['ip']):
         sho_req = api.host(target['ip'])
 
-      sho_res = {x:sho_req[x] if sho_req else None for x in sho_props}
-
-      self.urls.append({ **target, **sho_res })
     except Exception as e:
-      self.handle_exception(e, "Error while retreiving shodan informations")
+      self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
+
+    sho_res = {x:sho_req[x] if sho_req else None for x in sho_props}
+    self.urls.append({ **target, **sho_res })
