@@ -23,6 +23,7 @@ from docopt import docopt
 
 from wepwawet.banner import banner
 from wepwawet.utils.convertions import seconds_to_str
+from wepwawet.utils.stdouthook import StdOutHook
 from wepwawet.utils.color_print import ColorPrint
 import wepwawet.commands
 
@@ -38,6 +39,10 @@ def main():
     start_time = time.time()
 
     options = docopt(__doc__, version=VERSION)
+
+    if options["--output"] or options['--silent']:
+      sys.stdout = StdOutHook(options["FILENAME"], options['--silent'],
+                              options['--output'])
 
     if not options["--target"] and not options['--file']:
       ColorPrint.red(
@@ -55,6 +60,9 @@ def main():
     command.run()
 
     print("Urls infos search took %s" % seconds_to_str(time.time() - start_time))
+
+    if options["--output"]:
+      sys.stdout.write_out()
   except KeyboardInterrupt:
     print("\nQuitting...")
     sys.exit(0)
