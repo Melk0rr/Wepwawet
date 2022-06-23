@@ -8,4 +8,4 @@ def join_dictionary_items(dictionary, char):
   Join dictionary values with the provided character
 """
 def join_dictionary_values(dictionary, char):
-  return char.join([*dictionary.values()])
+  return char.join('{}'.format(v) for v in dictionary.values())
