@@ -47,7 +47,7 @@ class Target(Base):
         ip = socket.gethostbyname(host)
         ColorPrint.green(f"Gathering data for {ip} ({host})")
       except Exception as e:
-        self.handle_exception(e, "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
+        self.handle_exception(e, f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
 
       self.options["TARGET"][i] = { 'host': host, 'ip': ip }
 
