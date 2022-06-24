@@ -33,7 +33,7 @@ def ask_shodan(self):
 
     sho_base = filter_dictionary_properties(sho_req, sho_props)
     sho_data = filter_nested_properties(sho_req["data"], sho_data_props)
-    
+
     self.urls.append({
       **target,
       **sho_base,
@@ -43,7 +43,7 @@ def ask_shodan(self):
 
 
 def filter_dictionary_properties(dictionary, properties):
-  return { x:dictionary[x] if dictionary[x] else "" for x in properties }
+  return { x:dictionary[x] if dictionary[x] else " " for x in properties }
 
 def filter_nested_properties(dictionaries, properties):
   return { p: [ d[p] for d in dictionaries ] for p in properties }
