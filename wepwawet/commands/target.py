@@ -58,6 +58,6 @@ class Target(Base):
 
     ask_shodan(self)
 
-    ColorPrint.green(', '.join([*self.urls[0]]))
+    ColorPrint.green('|'.join([*self.urls[0]]))
     for url in self.urls:
-      ColorPrint.green(join_dictionary_values(url, ', '))
+      ColorPrint.green(join_dictionary_values(url, '|'))

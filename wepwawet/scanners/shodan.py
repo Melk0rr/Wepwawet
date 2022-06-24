@@ -20,7 +20,8 @@ def ask_shodan(self):
 
   for i in range(len(self.options["TARGET"])):
     target = self.options["TARGET"][i]
-
+    sho_req = None
+    
     try:
       # Asking shodan for the specified IP address
       if (target['ip']):
