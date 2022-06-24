@@ -19,7 +19,7 @@ def ask_shodan(self):
 
   for i in range(len(self.options["TARGET"])):
     target = self.options["TARGET"][i]
-    sho_req = None
+    sho_req = {}
     err_msg = ""
 
     try:
@@ -28,11 +28,13 @@ def ask_shodan(self):
         sho_req = api.host(target["ip"])
 
     except Exception as e:
-      err_msg = ""
+      err_msg = e
       self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
 
+    sho_data = sho_req["data"] if (sho_req and sho_req["data"]) else []
+    
     sho_base = filter_dictionary_properties(sho_req, sho_props)
-    sho_data = filter_nested_properties(sho_req["data"], sho_data_props)
+    sho_data = filter_nested_properties(sho_data, sho_data_props)
 
     self.urls.append({
       **target,
