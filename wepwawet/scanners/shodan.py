@@ -21,13 +21,14 @@ def ask_shodan(self):
   for i in range(len(self.options["TARGET"])):
     target = self.options["TARGET"][i]
     sho_req = None
-    
+
     try:
       # Asking shodan for the specified IP address
       if (target['ip']):
         sho_req = api.host(target['ip'])
 
     except Exception as e:
+      print(e)
       self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
 
     sho_res = {x:sho_req[x] if sho_req else None for x in sho_props}
