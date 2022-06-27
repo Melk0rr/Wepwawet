@@ -46,4 +46,4 @@ def filter_dictionary_properties(dictionary, properties):
   return { x: dictionary.get(x) for x in properties }
 
 def filter_nested_properties(dictionaries, properties):
-  return { p: [ d.get(p) for d in dictionaries ] for p in properties }
+  return { p: [ d.get(p) for d in (dictionaries or []) ] for p in properties }
