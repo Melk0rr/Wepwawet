@@ -48,4 +48,4 @@ def filter_dictionary_properties(dictionary, properties):
   return { x: dictionary[x] if (dictionary and dictionary[x]) else "" for x in properties }
 
 def filter_nested_properties(dictionaries, properties):
-  return { p: [ d[p] if d else "" for d in dictionaries ] for p in properties }
+  return { p: [ d[p] if (d and d[p]) else "" for d in dictionaries ] for p in properties }
