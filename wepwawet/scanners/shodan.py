@@ -32,7 +32,7 @@ def ask_shodan(self):
       self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
 
     sho_base = filter_dictionary_properties(sho_req, sho_props)
-    sho_data = filter_nested_properties(sho_req.get("data"), sho_data_props)
+    sho_data = filter_nested_properties(sho_req.get("data", []), sho_data_props)
 
     self.urls.append({
       **target,
@@ -43,7 +43,7 @@ def ask_shodan(self):
 
 
 def filter_dictionary_properties(dictionary, properties):
-  return { x: dictionary.get(x) for x in properties }
+  return { x: dictionary.get(x, "") for x in properties }
 
 def filter_nested_properties(dictionaries, properties):
-  return { p: [ d.get(p) for d in (dictionaries or []) ] for p in properties }
+  return { p: [ d.get(p, "") for d in dictionaries ] for p in properties }
