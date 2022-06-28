@@ -32,12 +32,12 @@ def ask_shodan(self):
       self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
 
     sho_base = filter_shodan_properties(sho_req, sho_props)
-    sho_data = get_shodan_product(sho_req)
+    sho_products = get_shodan_product(sho_req)
 
     self.urls.append({
       **target,
       **sho_base,
-      **sho_data,
+      **sho_products,
       "error": err_msg
     })
 
@@ -56,4 +56,4 @@ def get_shodan_product(shodan_req):
     if (product and port):
       product_list.add(f"{product}({port})")
 
-  return product_list
+  return list(product_list)
