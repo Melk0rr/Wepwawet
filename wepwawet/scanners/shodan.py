@@ -53,7 +53,8 @@ def get_shodan_product(shodan_req):
   for d in (shodan_req["data"] or []):
     product, port = d.get("product"), d.get("ports")
 
-    if (product and port):
-      product_list.add(f"{product}({port})")
+    if (product):
+      product_str, port_str = product, f"({port})"
+      product_list.add(f"{product_str}{port_str}")
 
-  return { 'product': product_list }
+  return { 'product': ', '.join(product_list) }
