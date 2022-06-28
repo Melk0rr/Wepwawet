@@ -43,10 +43,10 @@ def ask_shodan(self):
 
 
 def filter_shodan_properties(shodan_req, properties):
-  return { x: shodan_req.get(x, "") for x in properties }
+  return { x: format_shodan_property(shodan_req.get(x, "")) for x in properties }
 
-def filter_nested_properties(dictionaries, properties):
-  return { p: [ d[p] for d in dictionaries if d[p] ] for p in properties }
+def format_shodan_property(shodan_property):
+  return ', '.join(shodan_property) if (type(shodan_property) is list) else shodan_property
 
 def get_shodan_product(shodan_req):
   product_list = set()
