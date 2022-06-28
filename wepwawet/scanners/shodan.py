@@ -56,4 +56,4 @@ def get_shodan_product(shodan_req):
     if (product and port):
       product_list.add(f"{product}({port})")
 
-  return list(product_list)
+  return { 'product': product_list }
