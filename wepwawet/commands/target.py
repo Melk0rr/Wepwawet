@@ -41,15 +41,15 @@ class Target(Base):
 
       parsed = urlsplit(url)
       host = parsed.netloc
-      ip = None
+      target_ip = ""
 
       try:
-        ip = socket.gethostbyname(host)
-        ColorPrint.green(f"Gathering data for {ip} ({host})")
+        target_ip = socket.gethostbyname(host)
+        ColorPrint.green(f"Gathering data for {target_ip} ({host})")
       except Exception as e:
         self.handle_exception(e, f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
 
-      self.options["TARGET"][i] = { 'host': host, 'ip': ip }
+      self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
   
   def run(self):
