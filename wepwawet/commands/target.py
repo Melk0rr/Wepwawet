@@ -51,6 +51,10 @@ class Target(Base):
 
       self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
+  def print_urls_result(self):
+    ColorPrint.green('|'.join([*self.urls[0]]))
+    for url in self.urls:
+      ColorPrint.green(join_dictionary_values(url, '|'))
   
   def run(self):
     # Retreive IP of target and run initial configuration
@@ -58,6 +62,4 @@ class Target(Base):
 
     ask_shodan(self)
 
-    ColorPrint.green('|'.join([*self.urls[0]]))
-    for url in self.urls:
-      ColorPrint.green(join_dictionary_values(url, '|'))
+    self.print_urls_result()
