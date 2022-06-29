@@ -51,7 +51,7 @@ def format_shodan_property(shodan_property):
 def get_shodan_product(shodan_req):
   product_list = set()
   for d in (shodan_req.get("data", [])):
-    product, port = d.get("product"), d.get("ports")
+    product, port = d.get("product", ""), d.get("port", "")
 
     if (product):
       product_str, port_str = product, f"({port})"
