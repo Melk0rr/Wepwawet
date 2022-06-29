@@ -46,7 +46,7 @@ def filter_shodan_properties(shodan_req, properties):
   return { x: format_shodan_property(shodan_req.get(x, "")) for x in properties }
 
 def format_shodan_property(shodan_property):
-  return ', '.join(shodan_property) if (type(shodan_property) is list) else shodan_property
+  return ', '.join("{}".format(n) for n in shodan_property) if (type(shodan_property) is 'list') else shodan_property
 
 def get_shodan_product(shodan_req):
   product_list = set()
