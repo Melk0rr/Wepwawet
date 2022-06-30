@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from .base import Base
 from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.dictionary_join import join_dictionary
+from wepwawet.utils.dictionary_join import join_dictionary_values
 from wepwawet.scanners.shodan import ask_shodan
 
 '''Main enumeration module'''
@@ -41,25 +41,25 @@ class Target(Base):
 
       parsed = urlsplit(url)
       host = parsed.netloc
-      target = { 'host': host }
+      target_ip = ""
 
       try:
-        ip = socket.gethostbyname(host)
-        target['ip'] = ip
-        ColorPrint.green(f"Gathering data for {ip} ({host})")
+        target_ip = socket.gethostbyname(host)
+        ColorPrint.green(f"Gathering data for {target_ip} ({host})")
       except Exception as e:
-        self.handle_exception(e, "Error connecting to target! Make sure you spelled it correctly and it is a resolvable address")
+        self.handle_exception(e, f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
 
-      self.options["TARGET"][i] = target
+      self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
+  def print_urls_result(self):
+    ColorPrint.green('|'.join([*self.urls[0]]))
+    for url in self.urls:
+      ColorPrint.green(join_dictionary_values(url, '|'))
   
   def run(self):
     # Retreive IP of target and run initial configuration
     self.init()
 
-    for i in range(len(self.options["TARGET"])):
-      target = self.options["TARGET"][i]
-      ask_shodan(self, target)
+    ask_shodan(self)
 
-    for url in self.urls:
-      ColorPrint.green(join_dictionary(url, ', '))
+    self.print_urls_result()

@@ -33,3 +33,47 @@
                          888
 
 ```
+
+Wepwawet is an url information gathering tool. Wepwawet gathers data from a variety of sources,
+including Shodan, and more to come.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3 is required
+
+### Installing
+
+Please note Wepwawet is in alpha.
+
+```
+git clone https://github.com/JaufreLallement/Wepwawet.git
+cd Wepwawet
+pip3 install  -r requirements.txt
+pip3 install .
+```
+
+## Usage
+
+    Usage:
+      wepwawet (-t TARGET | -f FILE) [-o FILENAME]
+      wepwawet -h
+      wepwawet (--version | -V)
+
+    Options:
+      -h --help                       show this help message and exit
+      -t --target                     set target (comma separated, no spaces, if multiple)
+      -f --file                       set target (reads from file, one domain per line)
+      -o --output                     save to filename
+      -S --silent                     only output subdomains, one per line
+      -v --verbose                    print debug info and full request output
+      -V --version                    show version and exit
+    Help:
+      For help using this tool, please open an issue on the Github repository:
+      https://github.com/JaufreLallement/Wepwawet
+    
+    
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
