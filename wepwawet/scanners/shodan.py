@@ -8,7 +8,7 @@ sho_props = ['city', 'country_name', 'domains', 'isp', 'org', 'ports']
 Main shodan function : Emit request to shodan via API
 '''
 def ask_shodan(self, target):
-  print("Asking Shodan.io for additional information...")
+  print("Asking Shodan.io for information...")
 
   try:
     from wepwawet.API import SHODAN_KEY
