@@ -8,6 +8,7 @@ from .base import Base
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.dictionary_join import join_dictionary_values
 from wepwawet.scanners.shodan import ask_shodan
+from wepwawet.scanners.http import http_info
 
 '''Main enumeration module'''
 class Target(Base):
@@ -51,15 +52,21 @@ class Target(Base):
 
       self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
+
   def print_urls_result(self):
-    ColorPrint.green('|'.join([*self.urls[0]]))
+    ColorPrint.green("|".join([*self.urls[0]]))
     for url in self.urls:
-      ColorPrint.green(join_dictionary_values(url, '|'))
+      ColorPrint.green(join_dictionary_values(url, "|"))
   
+
   def run(self):
     # Retreive IP of target and run initial configuration
     self.init()
 
     ask_shodan(self)
+
+    if self.options["--http-info"]:
+      for i in range(len(self.options["TARGET"])):
+        http_info(self, self.options["TARGET"][i])
 
     self.print_urls_result()
