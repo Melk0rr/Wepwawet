@@ -66,6 +66,7 @@ class Target(Base):
     ask_shodan(self)
 
     if self.options["--http-info"]:
+      print("Gathering additional information from http requests...")
       for i in range(len(self.options["TARGET"])):
         http_info(self, self.options["TARGET"][i])
 
