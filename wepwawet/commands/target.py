@@ -54,6 +54,7 @@ class Target(Base):
 
 
   def print_urls_result(self):
+    print("Here are the results...")
     ColorPrint.green("|".join([*self.urls[0]]))
     for url in self.urls:
       ColorPrint.green(join_dictionary_values(url, "|"))

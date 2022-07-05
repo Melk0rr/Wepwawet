@@ -8,7 +8,7 @@ def http_info(self, target):
 
   try:
     req = requests.get(host)
-    soup = BeautifulSoup(req.content)
+    soup = BeautifulSoup(req.content, 'html.parser')
 
     http_status = req.status_code
     http_title = soup.title.text
