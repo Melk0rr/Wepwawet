@@ -3,12 +3,12 @@ import re
 from bs4 import BeautifulSoup
 
 def http_info(self, target):
-  host = 'http://' + target["host"] if not re.match(r'http(s?):', host) else target["host"]
+  host = 'http://' + target["host"]
   http_status = http_title = ""  
 
   try:
     req = requests.get(host)
-    soup = BeautifulSoup(req.content)
+    soup = BeautifulSoup(req.content, 'html.parser')
 
     http_status = req.status_code
     http_title = soup.title.text
