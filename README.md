@@ -66,7 +66,7 @@ pip3 install .
         -t --target                     set target (comma separated, no spaces, if multiple)
         -f --file                       set target (reads from file, one domain per line)
         -o --output                     save to filename
-        -i --http-info                  perform basic request to the target 
+        -i --http-info                  perform basic request to the target
         -S --silent                     only output subdomains, one per line
         -v --verbose                    print debug info and full request output
         -V --version                    show version and exit
