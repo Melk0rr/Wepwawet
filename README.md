@@ -45,10 +45,10 @@ including Shodan, and more to come.
 
 ### Installing
 
-Please note Wepwawet is in alpha.
+Please note that Wepwawet is in alpha.
 
 ```
-git clone https://github.com/JaufreLallement/Wepwawet.git
+git clone https://github.com/Melk0rr/Wepwawet.git
 cd Wepwawet
 pip3 install  -r requirements.txt
 pip3 install .
@@ -71,7 +71,7 @@ pip3 install .
       -V --version                    show version and exit
     Help:
       For help using this tool, please open an issue on the Github repository:
-      https://github.com/JaufreLallement/Wepwawet
+      https://github.com/Melk0rr/Wepwawet
     
     
 ## License
