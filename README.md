@@ -71,7 +71,6 @@ pip3 install .
         -v --verbose                    print debug info and full request output
         -V --version                    show version and exit
 
-<<<<<<< HEAD
     Options:
       -h --help                       show this help message and exit
       -t --target                     set target (comma separated, no spaces, if multiple)
