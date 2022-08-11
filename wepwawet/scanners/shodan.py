@@ -1,17 +1,17 @@
-from math import prod
+""" Shodan plugin which will interact with Shodan API to retreive ip data """
 import shodan
 
 sho_props = ["city", "country_name", "domains", "isp", "org", "ports"]
 
-"""
-Main shodan function : Emit request to shodan via API
-"""
+
 def ask_shodan(self):
+  """ Main shodan function : Emit request to shodan via API """
+
   print("Asking Shodan.io for additional information...")
 
   try:
     from wepwawet.API import SHODAN_KEY
-  except:
+  except Exception as e:
     self.handle_exception(e, "Unable to import API key - make sure API.py exists!")
     return
 
@@ -24,7 +24,7 @@ def ask_shodan(self):
 
     try:
       # Asking shodan for the specified IP address
-      if (target["ip"]):
+      if target["ip"]:
         sho_req = api.host(target["ip"])
 
     except Exception as e:
@@ -35,26 +35,31 @@ def ask_shodan(self):
     sho_products = get_shodan_product(sho_req)
 
     self.urls.append({
-      **target,
-      **sho_base,
-      **sho_products,
-      "error": err_msg
+        **target,
+        **sho_base,
+        **sho_products,
+        "error": err_msg
     })
 
 
-def filter_shodan_properties(shodan_req, properties):
-  return { x: format_shodan_property(shodan_req.get(x, "")) for x in properties }
+def filter_shodan_properties(shodan_req, props):
+  """ Filter shodan properties based on shop_props collection """
+  return {x: format_shodan_property(shodan_req.get(x, "")) for x in props}
 
-def format_shodan_property(shodan_property):
-  return (', '.join("{}".format(n) for n in shodan_property)) if (type(shodan_property) is list) else shodan_property
+
+def format_shodan_property(prop):
+  """ Format shodan property to a string and join values in case of a list """
+  return (', '.join(f"{n}" for n in prop)) if isinstance(prop, list) else prop
+
 
 def get_shodan_product(shodan_req):
+  """ Extract product list from ip ports data """
   product_list = set()
-  for d in (shodan_req.get("data", [])):
-    product, port = d.get("product", ""), d.get("port", "")
+  for port in (shodan_req.get("data", [])):
+    product, port_num = port.get("product", ""), port.get("port", "")
 
-    if (product):
-      product_str, port_str = product, f"({port})"
+    if product:
+      product_str, port_str = product, f"({port_num})"
       product_list.add(f"{product_str}{port_str}")
 
-  return { 'product': ', '.join(product_list) }
+  return {'product': ', '.join(product_list)}
