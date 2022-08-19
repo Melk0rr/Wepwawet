@@ -1,4 +1,5 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
+from xml.dom import NotFoundErr
 import shodan
 
 sho_props = ["city", "country_name", "domains", "isp", "org", "ports"]
@@ -11,8 +12,8 @@ def ask_shodan(self):
 
   try:
     from wepwawet.API import SHODAN_KEY
-  except Exception as e:
-    self.handle_exception(e, "Unable to import API key - make sure API.py exists!")
+  except NotFoundErr as err:
+    self.handle_exception(err, "Unable to import API key - make sure API.py exists!")
     return
 
   api = shodan.Shodan(SHODAN_KEY)
@@ -27,18 +28,18 @@ def ask_shodan(self):
       if target["ip"]:
         sho_req = api.host(target["ip"])
 
-    except Exception as e:
-      err_msg = e
-      self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
+    except Exception as err:
+      err_msg = err
+      self.handle_exception(err, f"Error while retreiving shodan informations for {target['host']}")
 
     sho_base = filter_shodan_properties(sho_req, sho_props)
     sho_products = get_shodan_product(sho_req)
 
     self.urls.append({
-        **target,
-        **sho_base,
-        **sho_products,
-        "error": err_msg
+      **target,
+      **sho_base,
+      **sho_products,
+      "error": err_msg
     })
 
 

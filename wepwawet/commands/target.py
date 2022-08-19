@@ -15,7 +15,7 @@ from .base import Base
 class Target(Base):
   """Main enumeration module"""
 
-  urls = list()
+  urls = []
 
   def handle_exception(self, e, message=""):
     """ Function handling exception for the current class """
@@ -45,14 +45,15 @@ class Target(Base):
         url = 'http://' + url
 
       parsed = urlsplit(url)
-      host = parsed.netloc
+      host = f"{parsed.scheme}://{parsed.netloc}"
       target_ip = ""
 
       try:
         target_ip = socket.gethostbyname(host)
         ColorPrint.green(f"Gathering data for {target_ip} ({host})")
-      except Exception as e:
-        self.handle_exception(e, f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
+      except ConnectionError as err:
+        self.handle_exception(err,
+        f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
 
       self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
@@ -77,3 +78,4 @@ class Target(Base):
         http_info(self, self.options["TARGET"][i])
 
     self.print_urls_result()
+    
