@@ -1,6 +1,7 @@
 """ Target module handling targeting operations and data gathering """
 import os
 import re
+import csv
 import socket
 from urllib.parse import urlsplit
 
@@ -45,17 +46,26 @@ class Target(Base):
         url = 'http://' + url
 
       parsed = urlsplit(url)
-      host = f"{parsed.scheme}://{parsed.netloc}"
+      host = parsed.netloc
       target_ip = ""
 
       try:
         target_ip = socket.gethostbyname(host)
         ColorPrint.green(f"Gathering data for {target_ip} ({host})")
-      except ConnectionError as err:
+      except Exception as err:
         self.handle_exception(err,
         f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
 
       self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
+
+
+  def res_2_csv(self):
+    """ Write the results into a CSV file """
+    print("\nExporting results to csv...")
+    with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
+      writer = csv.DictWriter(f, fieldnames=self.urls[0].keys())
+      writer.writeheader()
+      writer.writerows(self.urls)
 
 
   def print_urls_result(self):
@@ -73,9 +83,10 @@ class Target(Base):
     ask_shodan(self)
 
     if self.options["--http-info"]:
-      print("Gathering additional information from http requests...")
+      print("\nGathering additional information from http requests...")
       for i in range(len(self.options["TARGET"])):
         http_info(self, self.options["TARGET"][i])
 
-    self.print_urls_result()
+    if self.options["--export-csv"]:
+      self.res_2_csv()
     
