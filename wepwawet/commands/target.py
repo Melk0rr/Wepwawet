@@ -68,14 +68,6 @@ class Target(Base):
       writer.writerows(self.urls)
 
 
-  def print_urls_result(self):
-    """ Function printing the results of the process """
-    print("Here are the results...")
-    ColorPrint.green("|".join([*self.urls[0]]))
-    for url in self.urls:
-      ColorPrint.green(join_dictionary_values(url, "|"))
-
-
   def run(self):
     # Retreive IP of target and run initial configuration
     self.init()
