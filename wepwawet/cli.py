@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi] [-e CSV]
   wepwawet -h
   wepwawet (--version | -V)
 
@@ -8,6 +8,7 @@ Options:
   -h --help                       show this help message and exit
   -t --target                     set target (comma separated, no spaces, if multiple)
   -f --file                       set target (reads from file, one domain per line)
+  -e --export-csv CSV             save results as csv
   -o --output                     save to filename
   -i --http-info                  perform basic request to the target
   -S --silent                     simple output, one per line
@@ -63,7 +64,7 @@ def main():
     command = wepwawet.commands.Target(options)
     command.run()
 
-    print(f"Urls infos search took {seconds_to_str(time.time() - start_time)}s")
+    print(f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
 
     if options["--output"]:
       sys.stdout.write_out()
