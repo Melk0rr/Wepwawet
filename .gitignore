@@ -3,6 +3,9 @@ __pycache__/
 *py[cod]
 .pytest_cache/
 
+# Tests folder
+tests/
+
 # Distribution / packaging
 .Python
 build/
