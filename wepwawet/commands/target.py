@@ -6,7 +6,6 @@ import socket
 from urllib.parse import urlsplit
 
 from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.dictionary_join import join_dictionary_values
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.http import http_info
 
