@@ -57,23 +57,24 @@ pip3 install .
 ## Usage
 
       Usage:
-        wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi]
+        wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi] [--export-csv CSV]
         wepwawet -h
         wepwawet (--version | -V)
-        
+
       Options:
         -h --help                       show this help message and exit
         -t --target                     set target (comma separated, no spaces, if multiple)
         -f --file                       set target (reads from file, one domain per line)
         -o --output                     save to filename
-        -i --http-info                  perform basic request to the target
         -S --silent                     simple output, one per line
         -v --verbose                    print debug info and full request output
         -V --version                    show version and exit
-      
-    Help:
-      For help using this tool, please open an issue on the Github repository:
-      https://github.com/Melk0rr/Wepwawet
+        --export-csv CSV                save results as csv
+        --http-info                     perform basic request to the target
+
+      Help:
+        For help using this tool, please open an issue on the Github repository:
+        https://github.com/Melk0rr/Wepwawet
     
     
 ## License
