@@ -1,5 +1,4 @@
 """ Target module handling targeting operations and data gathering """
-import os
 import re
 import csv
 import socket
@@ -33,6 +32,7 @@ class Target(Base):
     # Clean up targets
     for i in range(len(self.options["TARGET"])):
       url = self.options["TARGET"][i]
+
       # Inject protocol if not there
       if not re.match(r'http(s?):', url):
         url = 'http://' + url
@@ -41,6 +41,7 @@ class Target(Base):
       host = parsed.netloc
       target_ip = ""
 
+      # Check if target is reachable
       try:
         target_ip = socket.gethostbyname(host)
         ColorPrint.green(f"Gathering data for {target_ip} ({host})")
@@ -66,11 +67,13 @@ class Target(Base):
 
     ask_shodan(self)
 
+    # If option is provided: do a simple http request to the target to retreive status and title
     if self.options["--http-info"]:
       print("\nGathering additional information from http requests...")
-      for i in range(len(self.options["TARGET"])):
-        http_info(self, self.options["TARGET"][i])
+      for i in range(len(self.urls)):
+        http_info(self, i)
 
+    # Export results to CSV if option is provided
     if self.options["--export-csv"]:
       self.res_2_csv()
     

@@ -42,13 +42,14 @@ def main():
 
     start_time = time.time()
 
-    #
+    # Pass doc to docopt
     options = docopt(__doc__, version=VERSION)
 
     if options["--output"] or options["--silent"]:
       sys.stdout = StdOutHook(options["FILENAME"], options["--silent"],
                               options["--output"])
 
+    # Check if at least target or file is provided
     if not options["--target"] and not options["--file"]:
       ColorPrint.red(
         "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required")
@@ -68,7 +69,7 @@ def main():
 
     if options["--output"]:
       sys.stdout.write_out()
-      
+
   except KeyboardInterrupt:
     print("\nQuitting...")
     sys.exit(0)

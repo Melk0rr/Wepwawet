@@ -1,22 +1,23 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
 import shodan
-from wepwawet.utils.dictionary_join import join_dictionary_items
 
 sho_props = ["city", "country_name", "domains", "isp", "org", "ports"]
-
-def filter_shodan_properties(shodan_req, props):
-  """ Filter shodan properties based on shop_props collection """
-  return {x: format_shodan_property(shodan_req.get(x, "")) for x in props}
-
 
 def format_shodan_property(prop):
   """ Format shodan property to a string and join values in case of a list """
   return (', '.join(f"{n}" for n in prop)) if isinstance(prop, list) else prop
 
 
+def filter_shodan_properties(shodan_req, props):
+  """ Filter shodan properties based on shop_props collection """
+  return {x: format_shodan_property(shodan_req.get(x, "")) for x in props}
+
+
 def get_shodan_product(shodan_req):
   """ Extract product list from ip ports data """
   product_list = set()
+
+  # For each port json object, build a string with the port number and associated product
   for port in (shodan_req.get("data", [])):
     product, port_num = port.get("product", ""), port.get("port", "")
 
@@ -63,5 +64,5 @@ def ask_shodan(self):
       "error": err_msg
     }
 
-    print(join_dictionary_items(res, "\n"))
+    print(f"Related domains: {res['domains']}\nOpen ports: {res['ports']}")
     self.urls.append(res)
