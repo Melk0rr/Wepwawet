@@ -44,11 +44,12 @@ class Target(Base):
       # Check if target is reachable
       try:
         target_ip = socket.gethostbyname(host)
-        ColorPrint.green(f"Gathering data for {target_ip} ({host})")
+
       except Exception as err:
         self.handle_exception(err,
-        f"Error connecting to {host}! Make sure you spelled it correctly and it is a resolvable address")
+        f"Error connecting to {host}! Make sure it is a resolvable address")
 
+      ColorPrint.green(f"Gathering data for {target_ip} ({host})")
       self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
 
 
