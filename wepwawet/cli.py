@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi] [--export-csv CSV]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSv] [--export-csv CSV] [--http-info]
   wepwawet -h
   wepwawet (--version | -V)
 
@@ -52,12 +52,12 @@ def main():
     # Check if at least target or file is provided
     if not options["--target"] and not options["--file"]:
       ColorPrint.red(
-        "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required")
+          "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required")
       return
 
     if options["--target"] and options["--file"]:
       ColorPrint.red(
-        "Please only supply one target method - either read by file with -f or as an argument to -t.")
+          "Please only supply one target method - either read by file with -f or as an argument to -t.")
       return
 
     print(banner)
@@ -65,7 +65,8 @@ def main():
     command = wepwawet.commands.Target(options)
     command.run()
 
-    print(f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
+    print(
+        f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
 
     if options["--output"]:
       sys.stdout.write_out()
