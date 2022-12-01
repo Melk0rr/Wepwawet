@@ -24,7 +24,6 @@ class Target(Base):
     if message:
       ColorPrint.red(message)
 
-
   def init(self):
     """ Initialization function """
     str_file_option_handle(self, "TARGET", "FILE")
@@ -47,11 +46,10 @@ class Target(Base):
 
       except Exception as err:
         self.handle_exception(err,
-        f"Error connecting to {host}! Make sure it is a resolvable address")
+                              f"Error connecting to {host}! Make sure it is a resolvable address")
 
       ColorPrint.green(f"Gathering data for {target_ip} ({host})")
-      self.options["TARGET"][i] = { 'host': host, 'ip': target_ip }
-
+      self.options["TARGET"][i] = {'host': host, 'ip': target_ip}
 
   def res_2_csv(self):
     """ Write the results into a CSV file """
@@ -60,7 +58,6 @@ class Target(Base):
       writer = csv.DictWriter(f, fieldnames=self.urls[0].keys())
       writer.writeheader()
       writer.writerows(self.urls)
-
 
   def run(self):
     # Retreive IP of target and run initial configuration
@@ -77,4 +74,3 @@ class Target(Base):
     # Export results to CSV if option is provided
     if self.options["--export-csv"]:
       self.res_2_csv()
-    
