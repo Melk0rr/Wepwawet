@@ -1,68 +1,58 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
 import shodan
 
-sho_props = ["city", "country_name", "domains", "isp", "org", "ports"]
+shodan_properties = ["city", "country_name", "domains", "isp", "org", "ports"]
 
-def format_shodan_property(prop):
+def format_shodan_property(property):
   """ Format shodan property to a string and join values in case of a list """
-  return (', '.join(f"{n}" for n in prop)) if isinstance(prop, list) else prop
+  return (', '.join(f"{n}" for n in property)) if isinstance(property, list) else property
 
 
-def filter_shodan_properties(shodan_req, props):
+def filter_shodan_properties(shodan_request):
   """ Filter shodan properties based on shop_props collection """
-  return {x: format_shodan_property(shodan_req.get(x, "")) for x in props}
+  return {x: format_shodan_property(shodan_request.get(x, "")) for x in shodan_properties}
 
 
-def get_shodan_product(shodan_req):
+def get_shodan_product(shodan_request):
   """ Extract product list from ip ports data """
   product_list = set()
 
   # For each port json object, build a string with the port number and associated product
-  for port in (shodan_req.get("data", [])):
-    product, port_num = port.get("product", ""), port.get("port", "")
+  for port in (shodan_request.get("data", [])):
+    product, port_number = port.get("product", ""), port.get("port", "")
 
     if product:
-      product_str, port_str = product, f"({port_num})"
+      product_str, port_str = product, f"({port_number})"
       product_list.add(f"{product_str}{port_str}")
 
   return {'product': ', '.join(product_list)}
 
 
-def ask_shodan(self):
+def ask_shodan(self, target, api):
   """ Main shodan function : Emit request to shodan via API """
 
   print("Asking Shodan.io...")
+  api = shodan.Shodan(api)
+
+  shodan_request = {}
+  error_message = ""
+
+  print(f"\n* {target['host']} *")
 
   try:
-    from wepwawet.API import SHODAN_KEY
-  except Exception as err:
-    self.handle_exception(err, "Unable to import API key - make sure API.py exists!")
-    return
+    # Asking shodan for the specified IP address
+    if target["ip"]:
+      shodan_request = api.host(target["ip"])
 
-  api = shodan.Shodan(SHODAN_KEY)
+  except Exception as e:
+    error_message = e
+    self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
 
-  for i in range(len(self.options["TARGET"])):
-    target = self.options["TARGET"][i]
-    sho_req = {}
-    err_msg = ""
+  shodan_infos = {
+    **filter_shodan_properties(shodan_request),
+    **get_shodan_product(shodan_request),
+    "error": error_message
+  }
 
-    print(f"\n* {target['host']} *")
-
-    try:
-      # Asking shodan for the specified IP address
-      if target["ip"]:
-        sho_req = api.host(target["ip"])
-
-    except Exception as err:
-      err_msg = err
-      self.handle_exception(err, f"Error while retreiving shodan informations for {target['host']}")
-
-    res = {
-      **target,
-      **filter_shodan_properties(sho_req, sho_props),
-      **get_shodan_product(sho_req),
-      "error": err_msg
-    }
-
-    print(f"Related domains: {res['domains']}\nOpen ports: {res['ports']}")
-    self.urls.append(res)
+  print(f"Related domains: {shodan_infos['domains']}\nOpen ports: {shodan_infos['ports']}")
+  return shodan_infos
