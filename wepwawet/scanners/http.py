@@ -1,12 +1,12 @@
 """ HTTP plugin used to check basic http infos for a given target """
 import re
+
 import requests
 from bs4 import BeautifulSoup
 
 
-def http_info(self, target_index):
+def http_info(self, target):
   """ Performs a simple HTTP request to the given target """
-  target = self.urls[target_index]
 
   host = target["host"]
 
@@ -29,8 +29,7 @@ def http_info(self, target_index):
 
   print(f"HTTP status: {http_status}, HTTP title: {http_title}")
 
-  self.urls[target_index] = {
-      **target,
+  return {
       "http_status": http_status,
       "http_title": http_title
   }
