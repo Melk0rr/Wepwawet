@@ -1,13 +1,13 @@
 """ Target module handling targeting operations and data gathering """
-import re
 import csv
+import re
 import socket
 from urllib.parse import urlsplit
 
+from wepwawet.scanners.http import http_info
+from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
-from wepwawet.scanners.shodan import ask_shodan
-from wepwawet.scanners.http import http_info
 
 from .base import Base
 
@@ -15,7 +15,7 @@ from .base import Base
 class Target(Base):
   """Main enumeration module"""
 
-  urls = []
+  results = []
 
   def handle_exception(self, e, message=""):
     """ Function handling exception for the current class """
@@ -48,28 +48,41 @@ class Target(Base):
         self.handle_exception(err,
                               f"Error connecting to {host}! Make sure it is a resolvable address")
 
-      ColorPrint.green(f"Gathering data for {target_ip} ({host})")
+      ColorPrint.green(f"Gathering data for {host}")
       self.options["TARGET"][i] = {'host': host, 'ip': target_ip}
 
   def res_2_csv(self):
     """ Write the results into a CSV file """
     print("\nExporting results to csv...")
     with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
-      writer = csv.DictWriter(f, fieldnames=self.urls[0].keys())
+      writer = csv.DictWriter(f, fieldnames=self.results[0].keys())
       writer.writeheader()
-      writer.writerows(self.urls)
+      writer.writerows(self.results)
 
   def run(self):
     # Retreive IP of target and run initial configuration
     self.init()
 
-    ask_shodan(self)
+    for target in self.options["TARGET"]:
+      print(f"\n{target['host']}:{target['ip']}")
 
-    # If option is provided: do a simple http request to the target to retreive status and title
-    if self.options["--http-info"]:
-      print("\nGathering additional information from http requests...")
-      for i in range(len(self.urls)):
-        http_info(self, i)
+      # If option is provided: check for informations with shodan API
+      if self.options["--shodan"]:
+        try:
+          from wepwawet.API import SHODAN_KEY
+        except Exception as err:
+          self.handle_exception(err, "Unable to import API key - make sure API.py exists!")
+          return
+
+        target = { **target, **ask_shodan(self, target, SHODAN_KEY) }
+
+      # If option is provided: do a simple http request to the target to retreive status and title
+      if self.options["--http-info"]:
+        print("\nGathering additional information from http requests...")
+        target = { **target, **http_info(self, target) }
+
+      self.results.append(target)
+
 
     # Export results to CSV if option is provided
     if self.options["--export-csv"]:
