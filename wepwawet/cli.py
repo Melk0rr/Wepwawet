@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSv] [--export-csv CSV] [--http-info]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info]
   wepwawet -h
   wepwawet (--version | -V)
 
@@ -9,6 +9,7 @@ Options:
   -t --target                     set target (comma separated, no spaces, if multiple)
   -f --file                       set target (reads from file, one domain per line)
   -o --output                     save to filename
+  -s --shodan                     request shodan API for informations
   -S --silent                     simple output, one per line
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
@@ -24,11 +25,11 @@ import time
 
 from docopt import docopt
 
+import wepwawet.commands
 from wepwawet.banner import banner
+from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.convertions import seconds_to_str
 from wepwawet.utils.stdouthook import StdOutHook
-from wepwawet.utils.color_print import ColorPrint
-import wepwawet.commands
 
 from . import __version__ as VERSION
 
