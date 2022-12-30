@@ -28,8 +28,8 @@ from docopt import docopt
 import wepwawet.commands
 from wepwawet.banner import banner
 from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.convertions import seconds_to_str
 from wepwawet.utils.stdouthook import StdOutHook
+from wepwawet.utils.convertions import seconds_to_str
 
 from . import __version__ as VERSION
 
