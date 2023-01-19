@@ -2,6 +2,7 @@
 import csv
 import re
 import socket
+from time import sleep
 from urllib.parse import urlsplit
 
 from wepwawet.scanners.http import http_info
@@ -71,18 +72,19 @@ class Target(Base):
         try:
           from wepwawet.API import SHODAN_KEY
         except Exception as err:
-          self.handle_exception(err, "Unable to import API key - make sure API.py exists!")
+          self.handle_exception(
+              err, "Unable to import API key - make sure API.py exists!")
           return
 
-        target = { **target, **ask_shodan(self, target, SHODAN_KEY) }
+        target = {**target, **ask_shodan(self, target, SHODAN_KEY)}
+        sleep(1)
 
       # If option is provided: do a simple http request to the target to retreive status and title
       if self.options["--http-info"]:
         print("\nGathering additional information from http requests...")
-        target = { **target, **http_info(self, target) }
+        target = {**target, **http_info(self, target)}
 
       self.results.append(target)
-
 
     # Export results to CSV if option is provided
     if self.options["--export-csv"]:
