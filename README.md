@@ -57,7 +57,7 @@ pip3 install .
 ## Usage
 
       Usage:
-        wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-oSvi] [--export-csv CSV]
+        wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info]
         wepwawet -h
         wepwawet (--version | -V)
 
@@ -66,6 +66,7 @@ pip3 install .
         -t --target                     set target (comma separated, no spaces, if multiple)
         -f --file                       set target (reads from file, one domain per line)
         -o --output                     save to filename
+        -s --shodan                     request shodan API for informations
         -S --silent                     simple output, one per line
         -v --verbose                    print debug info and full request output
         -V --version                    show version and exit
