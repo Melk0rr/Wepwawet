@@ -7,7 +7,7 @@ from wepwawet import __version__
 this_dir = abspath(dirname(__file__))
 
 with open(join(this_dir, 'README.md'), encoding='utf-8') as f:
-  long_description = f.read()
+  long_desc = f.read()
 
 with open(join(this_dir, 'requirements.txt'), encoding='utf-8') as f:
   reqs = f.read().splitlines()
@@ -16,7 +16,7 @@ setup(
     name='wepwawet',
     version=__version__,
     description='URLs information gathering',
-    long_description=long_description,
+    long_description=long_desc,
     long_description_content_type="text/markdown",
     url='https://github.com/Melk0rr/Wepwawet',
     author='Jaufré Lallement',
