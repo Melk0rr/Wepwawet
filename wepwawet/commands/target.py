@@ -77,7 +77,10 @@ class Target(Base):
           return
 
         target = {**target, **ask_shodan(self, target, SHODAN_KEY)}
-        sleep(1)
+
+        # Sleep 1s to reduce shodan API calls
+        if target["ip"]:
+          sleep(1)
 
       # If option is provided: do a simple http request to the target to retreive status and title
       if self.options["--http-info"]:
