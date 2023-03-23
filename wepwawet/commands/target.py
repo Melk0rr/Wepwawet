@@ -5,6 +5,7 @@ import socket
 from time import sleep
 from urllib.parse import urlsplit
 
+from wepwawet.scanners.geoloc import geoloc
 from wepwawet.scanners.http import http_info
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.utils.color_print import ColorPrint
@@ -86,6 +87,13 @@ class Target(Base):
       if self.options["--http-info"]:
         print("\nGathering additional information from http requests...")
         target = {**target, **http_info(self, target)}
+
+      if self.options["--geo"]:
+        print("\nGathering geographic informations...")
+        if target["ip"]:
+          geo = geoloc(self, target["ip"])
+          target = { **target, **geo }
+          
 
       self.results.append(target)
 

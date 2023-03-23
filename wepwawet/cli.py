@@ -1,10 +1,11 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSvg] [--export-csv CSV] [--http-info] [--check-tls-version]
   wepwawet -h
   wepwawet (--version | -V)
 
 Options:
+  -g --geo                        return the geographic informations
   -h --help                       show this help message and exit
   -t --target                     set target (comma separated, no spaces, if multiple)
   -f --file                       set target (reads from file, one domain per line)
@@ -28,8 +29,8 @@ from docopt import docopt
 import wepwawet.commands
 from wepwawet.banner import banner
 from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.stdouthook import StdOutHook
 from wepwawet.utils.convertions import seconds_to_str
+from wepwawet.utils.stdouthook import StdOutHook
 
 from . import __version__ as VERSION
 
