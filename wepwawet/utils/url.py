@@ -80,14 +80,14 @@ class URL:
 
     def Get_SSLCyherUsed(self):
         if self.B_SOCKET_WRAPPED:
-            return self.l_WrappedSocket.getpeercert()
+            return self.l_WrappedSocket.cipher()
         else:
             return "Socket is Not Wrapped: No cypher can be used"
 
 
     def Get_Certificate(self):
         if self.B_SOCKET_WRAPPED:
-            return self.l_WrappedSocket.cipher()
+            return self.l_WrappedSocket.getpeercert()
         else:
             return "Socket is Not Wrapped: No certificate can be retrieved"
 
