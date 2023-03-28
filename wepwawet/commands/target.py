@@ -87,6 +87,12 @@ class Target(Base):
         print("\nGathering additional information from http requests...")
         target = {**target, **http_info(self, target)}
 
+      # If option is provided: do a simple http request to the target to retreive status and title
+      if self.options["--check-tls"]:
+        print("\nGathering additional information from https TLS acceptance...")
+        target = {**target, **check_TLS(self, target)}
+
+
       self.results.append(target)
 
     # Export results to CSV if option is provided
