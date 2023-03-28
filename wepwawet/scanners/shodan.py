@@ -1,31 +1,16 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
 import shodan
 
-shodan_properties = ["city", "country_name", "domains", "isp", "org", "ports"]
-
-def format_shodan_property(property):
-  """ Format shodan property to a string and join values in case of a list """
-  return (', '.join(f"{n}" for n in property)) if isinstance(property, list) else property
+from wepwawet.scanners.port import Port
 
 
-def filter_shodan_properties(shodan_request):
-  """ Filter shodan properties based on shop_props collection """
-  return {x: format_shodan_property(shodan_request.get(x, "")) for x in shodan_properties}
-
-
-def get_shodan_product(shodan_request):
+def set_url_ports(target, shodan_request):
   """ Extract product list from ip ports data """
-  product_list = set()
 
   # For each port json object, build a string with the port number and associated product
-  for port in (shodan_request.get("data", [])):
-    product, port_number = port.get("product", ""), port.get("port", "")
-
-    if product:
-      product_str, port_str = product, f"({port_number})"
-      product_list.add(f"{product_str}{port_str}")
-
-  return {'product': ', '.join(product_list)}
+  for port_data in (shodan_request.get("data", [])):
+    port = Port(int(port_data.get("port")), port_data.get("product"))
+    target.append_open_port(port)
 
 
 def ask_shodan(self, target, api):
@@ -37,22 +22,30 @@ def ask_shodan(self, target, api):
   shodan_request = {}
   error_message = ""
 
-  print(f"\n* {target['host']} *")
-
   try:
     # Asking shodan for the specified IP address
-    if target["ip"]:
-      shodan_request = api.host(target["ip"])
+    if target.get_ip():
+      shodan_request = api.host(target.get_ip())
 
   except Exception as e:
     error_message = e
-    self.handle_exception(e, f"Error while retreiving shodan informations for {target['host']}")
+    self.handle_exception(
+        e, f"Error while retreiving shodan informations for {target['host']}")
 
-  shodan_infos = {
-    **filter_shodan_properties(shodan_request),
-    **get_shodan_product(shodan_request),
-    "error": error_message
+  # Set URL geo location
+  target.set_geo_location(shodan_request.get(
+      "city", ""), shodan_request.get("country", ""))
+
+  # Set URL related domain
+  target.set_related_domains(shodan_request.get("domains", ""))
+
+  # Set URL ports
+  set_url_ports(target, shodan_request)
+
+  shodan_res = {
+      "isp": shodan_request.get("isp", ""),
+      "org": shodan_request.get("org", ""),
+      "error": error_message
   }
 
-  print(f"Related domains: {shodan_infos['domains']}\nOpen ports: {shodan_infos['ports']}")
-  return shodan_infos
+  return shodan_res

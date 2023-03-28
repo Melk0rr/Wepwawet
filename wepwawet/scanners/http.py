@@ -1,6 +1,4 @@
 """ HTTP plugin used to check basic http infos for a given target """
-import re
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -8,16 +6,11 @@ from bs4 import BeautifulSoup
 def http_info(self, target):
   """ Performs a simple HTTP request to the given target """
 
-  host = target["host"]
-
-  if not re.match(r'http(s?):', host):
-    host = 'http://' + target["host"]
-
   http_status = http_title = ""
-  print(f"\nRequesting {target['host']}...")
+  print(f"\nRequesting {target.get_domain()}...")
 
   try:
-    req = requests.get(host)
+    req = requests.get(target.get_host())
     soup = BeautifulSoup(req.content, 'html.parser')
 
     http_status = req.status_code
@@ -25,7 +18,7 @@ def http_info(self, target):
 
   except Exception as e:
     self.handle_exception(
-        e, f"Error while requesting {target['host']}. Make sure the target is accessible")
+        e, f"Error while requesting {target.get_domain()}. Make sure the target is accessible")
 
   print(f"HTTP status: {http_status}, HTTP title: {http_title}")
 

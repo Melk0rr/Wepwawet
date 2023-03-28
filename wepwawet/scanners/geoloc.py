@@ -3,8 +3,8 @@ import json
 import requests
 
 
-def geoloc(self, ip):
-  req_url = f"https://geolocation-db.com/jsonp/{ip}"
+def geoloc(self, target):
+  req_url = f"https://geolocation-db.com/jsonp/{target.get_ip()}"
   res = {}
 
   try:
@@ -12,9 +12,9 @@ def geoloc(self, ip):
     res = response.content.decode()
     res = res.split("(")[1].strip(")")
     res = json.loads(res)
-  
+
+    target.set_geo_location(res["city"], res["country_name"])
+
   except Exception as e:
     self.handle_exception(
-        e, f"Error while requesting {ip}. Make sure the target is accessible")
-
-  return res
+        e, f"Can't get geolocation for {target.get_domain()}. Make sure the target is accessible.")
