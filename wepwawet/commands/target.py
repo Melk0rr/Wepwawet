@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 
 from wepwawet.scanners.http import http_info
 from wepwawet.scanners.shodan import ask_shodan
+from wepwawet.scanners.TLS import check_TLS
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
 
@@ -87,7 +88,7 @@ class Target(Base):
         print("\nGathering additional information from http requests...")
         target = {**target, **http_info(self, target)}
 
-      # If option is provided: do a simple http request to the target to retreive status and title
+      # If option is provided: do a simple check to the target to retreive TLS status 
       if self.options["--check-tls"]:
         print("\nGathering additional information from https TLS acceptance...")
         target = {**target, **check_TLS(self, target)}

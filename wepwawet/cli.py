@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info]
+  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info] [--check-tls]
   wepwawet -h
   wepwawet (--version | -V)
 
@@ -15,6 +15,7 @@ Options:
   -V --version                    show version and exit
   --export-csv CSV                save results as csv
   --http-info                     perform basic request to the target
+  --check-tls                     retrieve TLS version accepted by the target
 
 Help:
   For help using this tool, please open an issue on the Github repository:
