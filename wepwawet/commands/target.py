@@ -6,6 +6,7 @@ from wepwawet.scanners.http import http_info
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.url import URL
 from wepwawet.scanners.geoloc import geoloc
+from wepwawet.scanners.TLS import check_TLS
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
 
@@ -75,10 +76,16 @@ class Target(Base):
         print(f"\nGeo locating the target...")
         geoloc(self, target)
 
+      # If option is provided: do a simple check to the target to retreive TLS status
+      if self.options["--check-tls"]:
+        print("\nGathering additional information from https TLS acceptance...")
+        tls_res = check_TLS(self, target)
+
       final_res = {
           **target.to_dictionary(),
           **shodan_res,
-          **http_res
+          **http_res,
+          **tls_res
       }
 
       self.results.append(final_res)

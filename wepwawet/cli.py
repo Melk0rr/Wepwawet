@@ -13,6 +13,7 @@ Options:
   -S --silent                     simple output, one per line
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
+  --check-tls                     retrieve TLS version accepted by the target
   --export-csv=CSV                save results as csv
   --geo-locate                    geo locate the target
   --http-info                     perform basic request to the target
