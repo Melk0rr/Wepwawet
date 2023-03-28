@@ -4,7 +4,7 @@ import requests
 
 
 def geoloc(self, target):
-  req_url = f"https://geolocation-db.com/{target.get_ip()}"
+  req_url = f"https://geolocation-db.com/jsonp{target.get_ip()}"
   res = {}
 
   try:
