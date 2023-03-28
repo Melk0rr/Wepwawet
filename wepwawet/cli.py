@@ -1,6 +1,6 @@
 """
 Usage:
-  wepwawet (-t TARGET | -f FILE) [-o FILENAME] [-osSv] [--export-csv CSV] [--http-info]
+  wepwawet (-t TARGET | -f FILE) [options]
   wepwawet -h
   wepwawet (--version | -V)
 
@@ -8,12 +8,12 @@ Options:
   -h --help                       show this help message and exit
   -t --target                     set target (comma separated, no spaces, if multiple)
   -f --file                       set target (reads from file, one domain per line)
-  -o --output                     save to filename
+  -o --output=FILENAME            save to filename
   -s --shodan                     request shodan API for informations
   -S --silent                     simple output, one per line
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
-  --export-csv CSV                save results as csv
+  --export-csv=CSV                save results as csv
   --http-info                     perform basic request to the target
 
 Help:
