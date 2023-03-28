@@ -14,6 +14,7 @@ Options:
   -v --verbose                    print debug info and full request output
   -V --version                    show version and exit
   --export-csv=CSV                save results as csv
+  --geo-locate                    geo locate the target
   --http-info                     perform basic request to the target
 
 Help:

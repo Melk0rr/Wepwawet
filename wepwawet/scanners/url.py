@@ -16,8 +16,8 @@ class URL:
   open_ports = []
   related_domains = []
   geo_location = {
-      "city": None,
-      "country": None
+      "city": "",
+      "country": ""
   }
 
   def __init__(self, url):
@@ -50,7 +50,10 @@ class URL:
 
   def get_geo_str(self):
     """ Returns a string based on the geolocation infos """
-    return f"{self.geo_location['city']}, {self.geo_location['country']}"
+    city = self.geo_location['city']
+    country = self.geo_location['country']
+    separator = ", " if city and country else ""
+    return f"{city}{separator}{country}"
 
   def set_url(self, url):
     """ Set the URL and the domain """
@@ -72,6 +75,13 @@ class URL:
 
   def set_geo_location(self, city, country):
     """ Set the geo location infos """
+
+    if (city is None) or (len(city) <= 0):
+      city = self.geo_location['city']
+
+    if (country is None) or (len(country) <= 0):
+      country = self.geo_location['country']
+
     self.geo_location = {
         "city": city,
         "country": country
@@ -109,9 +119,6 @@ class URL:
 
     except:
       ColorPrint.red(f"Could not resolve IP address for {self.domain}")
-
-  def geo_locate(self):
-    """ Retrieves the geo location informations for the current URL """
 
   def to_dictionary(self):
     """ Returns a dictionary based on the instance attributes """
