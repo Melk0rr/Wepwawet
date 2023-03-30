@@ -1,21 +1,19 @@
-from wepwawet.scanners.ssl_socket import C_SSLSocket
+from wepwawet.scanners.ssl_socket import SSLSocket
 
 
-def check_TLS(self, target):
+def check_tls(self, target):
   """ Main TLS function : Check TLS """
-  print(f"Cheking TLS for {target['host']}")
-  MyURL = C_SSLSocket(url=target['host'], port=443)
+  print(f"Cheking TLS for {target.get_domain()}")
 
-  TLS_response = {}
-  error_message = ""
+  my_ssl_socket = SSLSocket(url=target)
+  tls_response = {}
 
   try:
+    tls_response = my_ssl_socket.get_tls_state()
+    print(tls_response)
 
-    TLS_response = MyURL.Get_TLS_State()
-    print(TLS_response)
   except Exception as e:
-    error_message = e
     self.handle_exception(
-        e, f"Error while checking TLS informations for {target['host']}")
+        e, f"Error while checking TLS informations for {target.get_domain()}")
 
-  return TLS_response
+  return tls_response

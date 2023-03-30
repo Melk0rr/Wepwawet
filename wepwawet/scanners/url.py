@@ -66,6 +66,9 @@ class URL:
 
   def set_open_ports(self, ports):
     """ Set the open ports """
+    # Clear the list of open ports
+    self.open_ports.clear()
+
     for p in ports:
       self.append_open_port(p)
 
@@ -89,13 +92,35 @@ class URL:
 
     print(f"{self.domain} is hosted in {self.get_geo_str()}")
 
+  def is_port_in_list(self, port):
+    """ Check if the given port is in the list of ports """
+    port_number = port
+
+    if isinstance(port, Port):
+      port_number = port.get_number()
+
+    return port_number in self.get_port_numbers()
+
   def append_open_port(self, port):
     """ Append the port to the list of open ports """
-    if isinstance(port, Port):
+    is_port = isinstance(port, Port)
+    is_number = isinstance(port, int)
+
+    if not (is_port or is_number):
+      raise ValueError(
+          "Provided port must be an instance of class Port or an integer")
+
+    if not self.is_port_in_list(port):
+      if is_number:
+        port = Port(port_number=port)
+
       self.open_ports.append(port)
 
-    else:
-      raise ValueError("Provided port must be an instance of class Port")
+  def remove_port(self, port):
+    """ Remove the port from the list of open ports """
+    index = self.get_port_numbers().index(port)
+
+    del self.open_ports[index]
 
   def extract_domain(self):
     """ Extract domain from url """
