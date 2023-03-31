@@ -3,6 +3,7 @@ import ssl
 
 from wepwawet.scanners.port import Port
 from wepwawet.scanners.url import URL
+from wepwawet.utils.color_print import ColorPrint
 
 # Exemple Usage
 
@@ -70,6 +71,7 @@ class MySocket:
 
   def open_socket(self):
     """ Open the socket """
+    
     if not self.TLS_PORT_OPENED:
       print("Port 443 is not opened")
       return -1
@@ -80,8 +82,7 @@ class MySocket:
         return -1
 
       else:
-        self.socket = socket.create_connection(
-            (self.URL.get_domain(), 443))
+        self.socket = socket.create_connection((self.URL.get_domain(), 443))
         self.SOCKET_OPENED = True
         return self.socket
 
@@ -128,7 +129,7 @@ class SSLSocket(MySocket):
     if self.SOCKET_WRAPPED:
       return self.wrapped_socket.cipher()
 
-    print(
+    ColorPrint.red(
         f"In {__class__.__name__} : Socket is Not Wrapped: No cypher can be used")
 
   def get_certificate(self):
@@ -136,7 +137,7 @@ class SSLSocket(MySocket):
     if self.SOCKET_WRAPPED:
       return self.wrapped_socket.getpeercert()
 
-    print(
+    ColorPrint.red(
         f"In {__class__.__name__} : Socket is Not Wrapped: No certificate can be retrieved")
 
   def get_header(self):
@@ -147,35 +148,38 @@ class SSLSocket(MySocket):
 
       return self.wrapped_socket.recv(1024).split(b"\r\n")
 
-    print(
+    ColorPrint.red(
         f"In {__class__.__name__} : ERROR Socket is Not Wrapped: No header can be retrieved")
 
   def wrap_ssl_socket(self, tls_version=None):
     """ Wrap the socket """
-    try:
-      if self.SOCKET_WRAPPED:
-        print(
-            f"In {__class__.__name__} : Warning trying to wrap a socket already Wrapped")
-        return False
+    if self.SOCKET_WRAPPED:
+      print(
+          f"In {__class__.__name__} : Warning trying to wrap a socket already Wrapped")
+      return False
 
-      else:
+    else:
+      # Setting ssl context based on specified tls version 
+      try:
+        self.ssl_context = ssl.create_default_context()
+
         if tls_version != None:
           self.ssl_context = ssl.SSLContext(tls_version or ssl.PROTOCOL_SSLv23)
 
-        else:
-          self.ssl_context = ssl.create_default_context()
+      except Exception as e:
+        ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
+        return False
 
+      # Wrapping the socket
+      try:
         self.wrapped_socket = self.ssl_context.wrap_socket(
             self.get_socket(), server_hostname=self.URL.get_domain())
         self.SOCKET_WRAPPED = True
 
-        return True
-
-    except Exception as err:
-      print(f"In {__class__.__name__} : {type(err).__name__} cannot wrap socket with default {tls_version}: {err}")
-      self.SOCKET_WRAPPED = False
-
-      return False
+      except Exception as err:
+        ColorPrint.yellow(f"In {__class__.__name__} : cannot wrap socket with version {tls_version}: {err}")
+        
+      return self.SOCKET_WRAPPED
 
   # *******************************************************
   # def is_tls_enabled(self,tls_version)
