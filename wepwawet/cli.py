@@ -2,7 +2,7 @@
 Usage:
   wepwawet (-t TARGET | -f FILE) [options]
   wepwawet -h
-  wepwawet (--version | -V)
+  wepwawet (-V | --version)
 
 Options:
   -h --help                       show this help message and exit
