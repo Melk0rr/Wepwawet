@@ -1,8 +1,8 @@
-import ssl
 import socket
+import ssl
 
-from wepwawet.scanners.url import URL
 from wepwawet.scanners.port import Port
+from wepwawet.scanners.url import URL
 
 # Exemple Usage
 
