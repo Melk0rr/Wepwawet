@@ -21,6 +21,7 @@ Options:
 Exemples:
   wepwawet -t https://www.google.com/ -s --export-csv ./test/wepoutput.csv
   wepwawet -f ./tests/targets.txt -s --geo-locate --http-info --export-csv ./test/wepoutput.csv
+  wepwawet -t https://www.google.com/ --check-tls
 
 Help:
   For help using this tool, please open an issue on the Github repository:
