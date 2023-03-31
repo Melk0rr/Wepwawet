@@ -166,7 +166,7 @@ class SSLSocket(MySocket):
           self.ssl_context = ssl.create_default_context()
 
         self.wrapped_socket = self.ssl_context.wrap_socket(
-            super().get_socket(), server_hostname=super().URL.get_domain())
+            self.get_socket(), server_hostname=self.URL.get_domain())
         self.SOCKET_WRAPPED = True
 
         return True

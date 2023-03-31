@@ -18,15 +18,10 @@ class Target(Base):
 
   results = []
 
-  def handle_exception(self, e, message=""):
-    """ Function handling exception for the current class """
-    if self.options["--verbose"]:
-      print(e)
-    if message:
-      ColorPrint.red(message)
+  def __init__(self, options):
+    """ Constructor """
+    super().__init__(options)
 
-  def init(self):
-    """ Initialization function """
     str_file_option_handle(self, "TARGET", "FILE")
 
     # Clean up targets and init instances
@@ -35,6 +30,13 @@ class Target(Base):
       url.resolve_ip()
 
       self.options["TARGET"][i] = url
+
+  def handle_exception(self, e, message=""):
+    """ Function handling exception for the current class """
+    if self.options["--verbose"]:
+      print(e)
+    if message:
+      ColorPrint.red(message)
 
   def res_2_csv(self):
     """ Write the results into a CSV file """
@@ -47,9 +49,9 @@ class Target(Base):
 
   def run(self):
     # Retreive IP of target and run initial configuration
-    self.init()
-
     for target in self.options["TARGET"]:
+      options_res = {}
+
       # If option is provided: check for informations with shodan API
       if self.options["--shodan"]:
         try:
@@ -60,7 +62,7 @@ class Target(Base):
               err, "Unable to import API key - make sure API.py exists!")
           return
 
-        shodan_res = ask_shodan(self, target, SHODAN_KEY)
+        options_res.update(ask_shodan(self, target, SHODAN_KEY))
 
         # Sleep 1s to reduce shodan API calls
         if target.get_ip():
@@ -69,7 +71,7 @@ class Target(Base):
       # If option is provided: do a simple http request to the target to retreive status and title
       if self.options["--http-info"]:
         print("\nGathering additional information from http requests...")
-        http_res = http_info(self, target)
+        options_res.update(http_info(self, target))
 
       # If option is provided: geo locate the target
       if self.options["--geo-locate"]:
@@ -79,13 +81,11 @@ class Target(Base):
       # If option is provided: do a simple check to the target to retreive TLS status
       if self.options["--check-tls"]:
         print("\nGathering additional information from https TLS acceptance...")
-        tls_res = check_tls(self, target)
+        options_res.update(check_tls(self, target))
 
       final_res = {
           **target.to_dictionary(),
-          **shodan_res,
-          **http_res,
-          **tls_res
+          **options_res
       }
 
       self.results.append(final_res)
