@@ -1,10 +1,10 @@
 """ URL module adressing url object behaviour """
 import re
 import socket
-from urllib.parse import urlsplit, urlparse
+from urllib.parse import urlparse, urlsplit
 
-from wepwawet.utils.color_print import ColorPrint
 from wepwawet.scanners.port import Port
+from wepwawet.utils.color_print import ColorPrint
 
 
 class URL:
@@ -62,7 +62,7 @@ class URL:
       self.domain = self.extract_domain()
 
     else:
-      raise Exception(f"Invalid URL provided: {url} !")
+      raise ValueError(f"Invalid URL provided: {url} !")
 
   def set_open_ports(self, ports):
     """ Set the open ports """

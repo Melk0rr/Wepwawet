@@ -1,5 +1,5 @@
-import ssl
 import socket
+import ssl
 
 # Exemple Usage
 
@@ -27,10 +27,10 @@ SSLEquiv = (
 
 class C_Socket:
     
-    def __init__(self,url="",port=666):
+    def __init__(self,url,port=666):
         self.l_URL = url
         self.l_Domain = self.Extract_Domain() or url
-        self.l_Port = port or 666 
+        self.l_Port = port or 666
         self.l_Socket = -1
         self.B_SOCKET_OPENED = False
 
@@ -54,18 +54,21 @@ class C_Socket:
         return self.l_URL.split("//")[-1].split("/")[0]
 
     def Open_Socket(self):
-        try:
-            if self.B_SOCKET_OPENED:
-                print (__class__.__name__ + ": Socket already opened")
+        if 443 in self.l_URL.open_ports:
+            try:
+                if self.B_SOCKET_OPENED:
+                    print (__class__.__name__ + ": Socket already opened")
+                    return -1
+                else:
+                    self.l_Socket = socket.create_connection((self.Get_Domain(), 443))
+                    self.B_SOCKET_OPENED = True
+                    return self.l_Socket
+            except:
+                self.B_SOCKET_OPENED = False
+                print (__class__.__name__ + ": Error while creating socket")
                 return -1
-            else:
-                self.l_Socket = socket.create_connection((self.Get_Domain(), self.Get_Port()))
-                self.B_SOCKET_OPENED = True
-                return self.l_Socket
-        except:
-            self.B_SOCKET_OPENED = False
-            print (__class__.__name__ + ": Error while creating socket")
-            return -1
+        else:
+            
 
     def Close_Socket(self):
         if self.B_SOCKET_OPENED:

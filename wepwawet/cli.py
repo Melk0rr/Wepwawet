@@ -18,6 +18,10 @@ Options:
   --geo-locate                    geo locate the target
   --http-info                     perform basic request to the target
 
+Exemples:
+  wepwawet -t https://www.google.com/ -s --export-csv ./test/wepoutput.csv
+  wepwawet -f ./tests/targets.txt -s --geo-locate --http-info --export-csv ./test/wepoutput.csv
+
 Help:
   For help using this tool, please open an issue on the Github repository:
   https://github.com/Melk0rr/Wepwawet

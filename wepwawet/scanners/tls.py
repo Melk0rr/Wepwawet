@@ -3,8 +3,8 @@ from wepwawet.scanners.ssl_socket import C_SSLSocket
 
 def check_TLS(self, target):
   """ Main TLS function : Check TLS """
-  print(f"Cheking TLS for {target['host']}")
-  MyURL = C_SSLSocket(url=target['host'], port=443)
+  print(f"Cheking TLS for {target.get_domain()}")
+  MyURL = C_SSLSocket(url=target, port=443)
 
   TLS_response = {}
   error_message = ""
