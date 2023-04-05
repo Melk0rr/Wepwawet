@@ -34,7 +34,7 @@ class MySocket:
 
   URL = None
   socket = None
-  SOCKET_OPENED = False
+  is_opened = False
   TLS_PORT_OPENED = False
 
   def __init__(self, url):
@@ -50,7 +50,7 @@ class MySocket:
 
   def get_socket(self):
     """ Getter for the socket """
-    if self.SOCKET_OPENED:
+    if self.is_opened:
       return self.socket
 
   def set_url(self, url):
@@ -77,37 +77,38 @@ class MySocket:
       return -1
 
     try:
-      if self.SOCKET_OPENED:
+      if self.is_opened:
         print(__class__.__name__ + ": Socket already opened")
         return -1
 
       else:
         self.socket = socket.create_connection((self.URL.get_domain(), 443))
-        self.SOCKET_OPENED = True
+        self.is_opened = True
         return self.socket
 
     except:
-      self.SOCKET_OPENED = False
+      self.is_opened = False
       print(__class__.__name__ + ": Error while creating socket")
       return -1
 
   def close_socket(self):
     """ Close the socket """
-    if self.SOCKET_OPENED:
+    if self.is_opened:
       self.socket.close()
 
     else:
       print(f"In {__class__.__name__} : Trying to close an unexisting socket")
 
-    self.SOCKET_OPENED = False
-    self.SOCKET_WRAPPED = False
+    self.is_opened = False
+    self.is_wrapped = False
 
 
 class SSLSocket(MySocket):
-
+ 
   ssl_context = None
   wrapped_socket = None
-  SOCKET_WRAPPED = False
+  is_wrapped = False
+  valid_ssl_certificate = False
 
   def __init__(self, url):
     super().__init__(url)
@@ -119,14 +120,14 @@ class SSLSocket(MySocket):
 
   def get_ssl_version(self):
     """ Returns the SSL version used for the url certificate """
-    if self.SOCKET_WRAPPED:
+    if self.is_wrapped:
       return self.wrapped_socket.version()
 
     print(f"In {__class__.__name__} : Socket was not Wrapped")
 
   def get_ssl_used_cypher(self):
     """ Returns the list of used cyphers """
-    if self.SOCKET_WRAPPED:
+    if self.is_wrapped:
       return self.wrapped_socket.cipher()
 
     ColorPrint.red(
@@ -134,18 +135,18 @@ class SSLSocket(MySocket):
 
   def get_certificate(self):
     """ Returns the url certificate """
-    if self.SOCKET_WRAPPED:
-      return self.wrapped_socket.getpeercert()
-
+    if self.is_wrapped:
+      if self.valid_ssl_certificate:
+        return self.wrapped_socket.getpeercert()
     ColorPrint.red(
         f"In {__class__.__name__} : Socket is Not Wrapped: No certificate can be retrieved")
 
+
   def get_header(self):
-    if self.SOCKET_WRAPPED:
+    if self.is_wrapped:
       str_Data = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
       str_Encoded = str.encode(str_Data)
       self.wrapped_socket.sendall(str_Encoded)
-
       return self.wrapped_socket.recv(1024).split(b"\r\n")
 
     ColorPrint.red(
@@ -153,7 +154,7 @@ class SSLSocket(MySocket):
 
   def wrap_ssl_socket(self, tls_version=None):
     """ Wrap the socket """
-    if self.SOCKET_WRAPPED:
+    if self.is_wrapped:
       print(
           f"In {__class__.__name__} : Warning trying to wrap a socket already Wrapped")
       return False
@@ -174,12 +175,18 @@ class SSLSocket(MySocket):
       try:
         self.wrapped_socket = self.ssl_context.wrap_socket(
             self.get_socket(), server_hostname=self.URL.get_domain())
-        self.SOCKET_WRAPPED = True
+        self.is_wrapped = True
+        self.valid_ssl_certificate = True
 
+      except ssl.SSLCertVerificationError:
+          ColorPrint.yellow(f"In {__class__.__name__} :No valid certificate found.")
+          self.valid_ssl_certificate = False
+          self.is_wrapped = False
+              
       except Exception as err:
-        ColorPrint.yellow(f"In {__class__.__name__} : cannot wrap socket with version {tls_version}: {err}")
-        
-      return self.SOCKET_WRAPPED
+          ColorPrint.yellow(f"In {__class__.__name__} : cannot wrap socket with version {tls_version}: {err}")
+
+      return self.is_wrapped
 
   # *******************************************************
   # def is_tls_enabled(self,tls_version)
@@ -187,7 +194,8 @@ class SSLSocket(MySocket):
   #       ssl.PROTOCOL_TLSv1
   #       ssl.PROTOCOL_TLSv1_1
   #       ssl.PROTOCOL_TLSv1_2
-  # *******************************************************
+  #       none for maximum value available (test for TLS1.3)
+    # *******************************************************
 
   def is_tls_enabled(self, tls_version):
     """ Checks if TLS protocol is enabled """

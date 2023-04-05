@@ -17,3 +17,4 @@ def check_tls(self, target):
         e, f"Error while checking TLS informations for {target.get_domain()}")
 
   return tls_response
+

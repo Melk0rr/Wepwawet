@@ -5,6 +5,7 @@ from time import sleep
 from wepwawet.scanners.geoloc import geoloc
 from wepwawet.scanners.http import http_info
 from wepwawet.scanners.shodan import ask_shodan
+from wepwawet.scanners.header import check_header
 from wepwawet.scanners.tls import check_tls
 from wepwawet.scanners.url import URL
 from wepwawet.utils.color_print import ColorPrint
@@ -82,6 +83,7 @@ class Target(Base):
       if self.options["--check-tls"]:
         print("\nGathering additional information from https TLS acceptance...")
         options_res.update(check_tls(self, target))
+        options_res.update(check_header(self, target))
 
       final_res = {
           **target.to_dictionary(),
