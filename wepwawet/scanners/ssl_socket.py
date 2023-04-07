@@ -103,13 +103,17 @@ class MySocket:
     self.is_opened = False
 
 
-class SSLSocket(MySocket,certificate):
+class SSLSocket(MySocket):
  
   ssl_context = None
   wrapped_socket = None
+  ssl_certificate = None
+
 
   def __init__(self, url):
-    MySocket.__init__(url)
+        
+    super().__init__(url)
+    self.ssl_certificate = certificate()
     #certificate.__init__()
 
   def get_ssl_context(self):
@@ -119,28 +123,28 @@ class SSLSocket(MySocket,certificate):
 
   def get_ssl_version(self):
     """ Returns the SSL version used for the url certificate """
-    if super(certificate).state:
+    if self.ssl_certificate.state:
       return self.wrapped_socket.version()
 
     print(f"In {__class__.__name__} : Socket was not Wrapped")
 
   def get_ssl_used_cypher(self):
     """ Returns the list of used cyphers """
-    if super(certificate).state:
+    if self.ssl_certificate.state:
           return self.wrapped_socket.cipher()
     else:
       ColorPrint.red(f"In {__class__.__name__} :no cypher can be retrieved")
 
   def get_certificate(self):
     """ Returns the url certificate """
-    if super(certificate).state:
+    if self.ssl_certificate.state:
       return self.wrapped_socket.getpeercert()
     else:
       ColorPrint.red(f"In {__class__.__name__} : No certificate can be retrieved")
   
     
   def get_header(self):
-    if super(certificate).state:
+    if self.ssl_certificate.state:
       str_Data = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
       str_Encoded = str.encode(str_Data)
       self.wrapped_socket.sendall(str_Encoded)
@@ -150,7 +154,7 @@ class SSLSocket(MySocket,certificate):
 
   def wrap_ssl_socket(self, tls_version=None):
     """ Wrap the socket """
-    if super(certificate).state:
+    if self.ssl_certificate.state:
       print(f"In {__class__.__name__} : Warning trying to wrap a socket already Wrapped")
       return False
 
@@ -166,24 +170,28 @@ class SSLSocket(MySocket,certificate):
         ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
         return False
 
+
       # Wrapping the socket
       try:
         self.wrapped_socket = self.ssl_context.wrap_socket(
             self.get_socket(), server_hostname=self.URL.get_domain())
-        super(certificate).state = True
+        self.ssl_certificate.state = True
        
+
       except ssl.SSLCertVerificationError as err:
-        super(certificate).state = False
+        self.ssl_certificate.state = False
         #if err is ssl.ALERT_DESCRIPTION_CERTIFICATE_EXPIRED:
+        self.ssl_certificate.reason = err.reason
+        self.ssl_certificate.code = err.verify_code
+        self.ssl_certificate.message = err.verify_message
+     
+
         ColorPrint.yellow(f"In {__class__.__name__} : Certificate error {err.reason} : {err.verify_code} : {err.verify_message}")
 
       except Exception as err:
         ColorPrint.yellow(f"In {__class__.__name__} : cannot wrap socket with version {tls_version}: {err}")
 
-      super(certificate).reason = ssl.SSLCertVerificationError.reason
-      super(certificate).verify_code = ssl.SSLCertVerificationError.verify_code
-      super(certificate).verify_message = ssl.SSLCertVerificationError.verify_message
-      return super(certificate).state
+      return self.ssl_certificate.state
 
   # *******************************************************
   # def is_tls_enabled(self,tls_version)
@@ -197,12 +205,12 @@ class SSLSocket(MySocket,certificate):
   def is_tls_enabled(self, tls_version):
     """ Checks if TLS protocol is enabled """
     value = ""
-    super(MySocket).open_socket()
+    super().open_socket()
 
     if self.wrap_ssl_socket(tls_version):
       value = self.get_ssl_version()
 
-    super(MySocket).close_socket()
+    super().close_socket()
 
     return value
 
