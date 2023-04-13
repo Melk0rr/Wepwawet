@@ -50,8 +50,8 @@ Please note that Wepwawet is in alpha.
 ```
 git clone https://github.com/Melk0rr/Wepwawet.git
 cd Wepwawet
-pip3 install  -r requirements.txt
-pip3 install .
+pip install  -r requirements.txt
+pip install .
 ```
 
 ## Usage
