@@ -9,3 +9,5 @@ def join_dictionary_items(dictionary, char):
 def join_dictionary_values(dictionary, char):
   """ Join dictionary values with the provided character """
   return char.join(f"{v}" for v in dictionary.values())
+
+
