@@ -177,6 +177,7 @@ class SSLSocket(MySocket):
         ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
         return False
 
+
       # Wrapping the socket
       try:
         self.wrapped_socket = self.ssl_context.wrap_socket(

@@ -82,8 +82,8 @@ class Target(Base):
       # If option is provided: do a simple check to the target to retreive TLS status
       if self.options["--check-tls"]:
         print("\nGathering additional information from https TLS acceptance...")
-        options_res.update(check_tls(self, target))
         options_res.update(check_header(self, target))
+        options_res.update(check_tls(self, target))
 
       final_res = {
           **target.to_dictionary(),

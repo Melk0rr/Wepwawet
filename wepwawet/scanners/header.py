@@ -1,4 +1,5 @@
 import ssl
+import json
 from wepwawet.scanners.ssl_socket import SSLSocket
 from wepwawet.scanners.certificate import Certificate
 from wepwawet.utils.color_print import ColorPrint
@@ -19,6 +20,7 @@ def check_header(self, target):
         local_ssl_socket.ssl_certificate.data = local_ssl_socket.get_certificate()
 
   except Exception as e:
+
     ColorPrint.red(f"{e} : Error while retrieving Header informations for {target.get_domain()}")
   
   response = { 
@@ -36,5 +38,4 @@ def check_header(self, target):
   local_ssl_socket.ssl_certificate.Analyse()
 
   local_ssl_socket.close_socket()
-
   return response
