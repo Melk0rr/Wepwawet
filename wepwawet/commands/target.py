@@ -5,8 +5,8 @@ from time import sleep
 from wepwawet.scanners.geoloc import geoloc
 from wepwawet.scanners.http import http_info
 from wepwawet.scanners.shodan import ask_shodan
-from wepwawet.scanners.header import check_header
 from wepwawet.scanners.tls import check_tls
+from wepwawet.scanners.header import check_header
 from wepwawet.scanners.url import URL
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
