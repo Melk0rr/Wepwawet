@@ -5,18 +5,21 @@ Usage:
   wepwawet (-V | --version)
 
 Options:
-  -h --help                       show this help message and exit
-  -t --target                     set target (comma separated, no spaces, if multiple)
-  -f --file                       set target (reads from file, one domain per line)
-  -o --output=FILENAME            save to filename
-  -s --shodan                     request shodan API for informations
-  -S --silent                     simple output, one per line
-  -v --verbose                    print debug info and full request output
-  -V --version                    show version and exit
-  --check-tls                     retrieve TLS version accepted by the target
-  --export-csv=CSV                save results as csv
-  --geo-locate                    geo locate the target
-  --http-info                     perform basic request to the target
+  -h --help                   show this help message and exit
+  -t --target                 set target (comma separated, no spaces, if multiple)
+  -f --file                   set target (reads from file, one domain per line)
+  -o --output=FILENAME        save to filename
+  -s --shodan                 request shodan API for informations
+  -S --silent                 simple output, one per line
+  -v --verbose                print debug info and full request output
+  -V --version                show version and exit
+  --check-tls                 retrieve TLS version accepted by the target
+  --export-csv=CSV            save results as csv
+  --geo-locate                geo locate the target
+  --http-info                 perform basic request to the target
+
+Singletarget-options:
+  --whois                     check who.is for information on the target
 
 Exemples:
   wepwawet -t https://www.google.com/ -s --export-csv ./test/wepoutput.csv
