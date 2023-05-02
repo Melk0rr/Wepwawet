@@ -18,7 +18,7 @@ def check_header(target):
         local_ssl_socket.get_certificate()
 
       try:
-        local_ssl_socket.header.Analyse()
+        local_ssl_socket.header.analyse()
       except Exception as e:
         ColorPrint.red(f"{e} : Error while analysing Header of {target.get_domain()}")
 

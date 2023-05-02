@@ -36,10 +36,10 @@ index_ssl = ["", "", "", "TLS1.0", "TLS1.1", "TLS1.2","TLS1.3"]
 class Header:
   state= False
   data = "No header"
-  csp = "-"
-  hsts = "-"
-  x_content = "-"
-  x_frame = "-"
+  csp = "[NONE]"
+  hsts = "[NONE]"
+  x_content = "[NONE]"
+  x_frame = "[NONE]"
 
   def __init__(self):
     """ Constructor """
@@ -57,11 +57,11 @@ class Header:
           ColorPrint.green(f"Found {security} in {el}")
           return el
 
-    return "-"    
+    return "[NONE]"    
 
   
-  def Analyse(self):
-        
+  def analyse(self):
+    """ Analyse the header to check for security implementations """
     self.csp = self.check_header(b"Content-Security-Policy")
     self.hsts = self.check_header(b"Strict-Transport-Security")
     self.x_content = self.check_header(b"X-Content-Type-Options")
@@ -92,11 +92,11 @@ class MySocket:
 
   def set_url(self, url):
     """ Setter for the URL """
-    if isinstance(url, URL):
-      self.URL = url
-
-    else:
+    if not isinstance(url, URL):
       raise ValueError("Provided url must be an instance of the URL class !")
+      
+    self.URL = url
+      
 
   def check_port(self, port=443):
     """ Check whether or not the given port is open on the URL """
@@ -108,25 +108,26 @@ class MySocket:
 
   def open_socket(self):
     """ Open the socket """
+    res = -1
 
-    if not self.TLS_PORT_OPENED:
+    if self.TLS_PORT_OPENED:
+      try:
+        if self.is_opened:
+          print(__class__.__name__ + ": Socket already opened")
+
+        else:
+          self.socket = socket.create_connection((self.URL.get_domain(), 443))
+          self.is_opened = True
+          res = self.socket
+
+      except:
+        self.is_opened = False
+        ColorPrint.red(__class__.__name__ + ": Error while creating socket")
+    
+    else:
       print("Port 443 is not opened")
-      return -1
 
-    try:
-      if self.is_opened:
-        print(__class__.__name__ + ": Socket already opened")
-        return -1
-
-      else:
-        self.socket = socket.create_connection((self.URL.get_domain(), 443))
-        self.is_opened = True
-        return self.socket
-
-    except:
-      self.is_opened = False
-      print(__class__.__name__ + ": Error while creating socket")
-      return -1
+    return res
 
   def close_socket(self):
     """ Close the socket """
@@ -159,16 +160,20 @@ class SSLSocket(MySocket):
 
   def get_ssl_version(self):
     """ Returns the SSL version used for the url certificate """
+    version = ""
     if self.ssl_certificate.state:
-      return self.wrapped_socket.version()
+      version = self.wrapped_socket.version()
+    
     else:
       ColorPrint.red(f"In {__class__.__name__} :no SSL can be retrieved")
-      return("") 
+
+    return version
 
   def get_ssl_used_cypher(self):
     """ Returns the list of used cyphers """
     if self.ssl_certificate.state:
       return self.wrapped_socket.cipher()
+    
     else:
       ColorPrint.red(f"In {__class__.__name__} :no cypher can be retrieved")
 
@@ -180,6 +185,7 @@ class SSLSocket(MySocket):
 
       except Exception as err:
         ColorPrint.red(f"In {__class__.__name__} - {err} :getPeerCert error")
+
     else:
       ColorPrint.red(
           f"In {__class__.__name__} : No certificate can be retrieved")
@@ -193,6 +199,7 @@ class SSLSocket(MySocket):
       self.wrapped_socket.sendall(str_Encoded)
       self.header.data = self.wrapped_socket.recv(1024).split(b"\r\n")
       self.header.state = True
+
     else:
        ColorPrint.red(f"In {__class__.__name__} : ERROR Socket is Not Wrapped: No header can be retrieved")
     
@@ -227,6 +234,7 @@ class SSLSocket(MySocket):
         self.ssl_certificate.reason = err.reason
         self.ssl_certificate.code = err.verify_code
         self.ssl_certificate.message = err.verify_message
+
         ColorPrint.yellow(
             f"In {__class__.__name__} : Certificate error {err.reason} : {err.verify_code} : {err.verify_message}")
 
@@ -249,11 +257,13 @@ class SSLSocket(MySocket):
 
   def is_tls_enabled(self, tls_to_test):
     """ Checks if TLS protocol is enabled """
-
+    enabled = False
+    
     if self.wrap_ssl_socket(tls_version=tls_to_test):
       ColorPrint.green(self.get_ssl_version())
-      return True
-    return False
+      enabled = True
+
+    return enabled
 
   def get_tls_state(self):
     """Check evry specified TLS version State"""

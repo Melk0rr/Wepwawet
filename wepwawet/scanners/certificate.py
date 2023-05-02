@@ -110,23 +110,25 @@ class Certificate:
 
   state = False
   code = -1
-  reason = "-"
-  message = "-"
+  reason = "[NONE]"
+  message = "[NONE]"
 
   data = []
   validity = 0
 
   def analyse(self):
     """ Analyse certificate data """
+    res = False
     try:
       if self.state:
         expiring_dt = datetime.strptime(
             self.data["notAfter"], "%b %d %H:%M:%S %Y %Z")
         diff = expiring_dt - datetime.now()
         self.validity = diff.days
-      
-    except Exception as err:
-      ColorPrint.yellow(f"In {__class__.__name__} - Got an error : {err} ")
-      return False
 
-    return True
+        res = True
+
+    except Exception as err:
+      ColorPrint.yellow(f"In {__class__.__name__} : {err} ")
+
+    return res
