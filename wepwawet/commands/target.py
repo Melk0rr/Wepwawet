@@ -4,6 +4,7 @@ from time import sleep
 
 from wepwawet.scanners.geoloc import geoloc
 from wepwawet.scanners.http import http_info
+from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
 from wepwawet.scanners.url import URL
@@ -17,19 +18,21 @@ class Target(Base):
   """Main enumeration module"""
 
   results = []
+  unique_targets = []
 
   def __init__(self, options):
     """ Constructor """
     super().__init__(options)
 
     str_file_option_handle(self, "TARGET", "FILE")
+    self.unique_targets = list(set(self.options["TARGET"]))
 
     # Clean up targets and init instances
-    for i in range(len(self.options["TARGET"])):
-      url = URL(self.options["TARGET"][i])
+    for i in range(len(self.unique_targets)):
+      url = URL(self.unique_targets[i])
       url.resolve_ip()
 
-      self.options["TARGET"][i] = url
+      self.unique_targets[i] = url
 
   def handle_exception(self, e, message=""):
     """ Function handling exception for the current class """
@@ -49,8 +52,13 @@ class Target(Base):
 
   def run(self):
     # Retreive IP of target and run initial configuration
-    for target in self.options["TARGET"]:
+    for target in self.unique_targets:
       options_res = {}
+
+      # If option is provided run ping on the target
+      if self.options["--ping"]:
+        respond = ping(target)
+        options_res.update({ "ping": "YES" if respond else "NO" })
 
       # If option is provided: check for informations with shodan API
       if self.options["--shodan"]:
