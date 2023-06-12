@@ -116,6 +116,9 @@ class URL:
 
       self.open_ports.append(port)
 
+    else:
+      print(f"This port is already in the list of open ports")
+
   def remove_port(self, port):
     """ Remove the port from the list of open ports """
     index = self.get_port_numbers().index(port)

@@ -18,6 +18,7 @@ Options:
   --export-csv=CSV                save results as csv
   --geo-locate                    geo locate the target
   --http-info                     perform basic request to the target
+  --whois                     check who.is for information on the target
 
 Exemples:
   wepwawet -t https://www.google.com/ -s --export-csv ./test/wepoutput.csv
