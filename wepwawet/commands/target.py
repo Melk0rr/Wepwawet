@@ -3,13 +3,13 @@ import csv
 from time import sleep
 
 from wepwawet.scanners.geoloc import geoloc
+from wepwawet.scanners.header import check_header
 from wepwawet.scanners.http import http_info
 from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
-from wepwawet.scanners.header import check_header
-from wepwawet.scanners.whois import whois
 from wepwawet.scanners.url import URL
+from wepwawet.scanners.whois import whois
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
 
@@ -28,6 +28,7 @@ class Target(Base):
 
     str_file_option_handle(self, "TARGET", "FILE")
     self.unique_targets = list(set(self.options["TARGET"]))
+    print(f"Investigating {len(self.unique_targets)} hosts...")
 
     # Clean up targets and init instances
     for i in range(len(self.unique_targets)):
@@ -47,10 +48,15 @@ class Target(Base):
     """ Write the results into a CSV file """
     print("\nExporting results to csv...")
 
+    if len(self.results) <= 0:
+      ColorPrint.red(f"Error while exporting results to CSV ({len(self.results)} results)s")
+      return 0
+
     with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
       writer = csv.DictWriter(f, fieldnames=self.results[0].keys())
       writer.writeheader()
       writer.writerows(self.results)
+
 
   def run(self):
     # Retreive IP of target and run initial configuration
