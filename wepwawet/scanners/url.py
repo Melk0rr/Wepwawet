@@ -10,23 +10,24 @@ from wepwawet.utils.color_print import ColorPrint
 class URL:
   """ URL class implementation """
 
-  host = ""
-  domain = ""
-  ip = ""
-  open_ports = []
-  related_domains = []
-  geo_location = {
-      "city": "",
-      "country": ""
-  }
-
   def __init__(self, url):
     """ Constructor """
     # Inject protocol if not there
     if not re.match(r'http(s?):', url):
       url = 'http://' + url
 
-    self.set_url(url)
+    if not self.is_valid_url(url):
+      raise ValueError(f"Invalid URL provided: {url} !")
+
+    self.host = url
+    self.domain = self.extract_domain()
+    self.ip = ""
+    self.open_ports = []
+    self.related_domains = []
+    self.geo_location = {
+        "city": "",
+        "country": ""
+    }
 
   def get_host(self):
     """ Getter for the URL """
@@ -54,15 +55,6 @@ class URL:
     country = self.geo_location['country']
     separator = ", " if city and country else ""
     return f"{city}{separator}{country}"
-
-  def set_url(self, url):
-    """ Set the URL and the domain """
-    if self.is_valid_url(url):
-      self.host = url
-      self.domain = self.extract_domain()
-
-    else:
-      raise ValueError(f"Invalid URL provided: {url} !")
 
   def set_open_ports(self, ports):
     """ Set the open ports """
