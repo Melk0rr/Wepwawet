@@ -34,18 +34,15 @@ index_ssl = ["", "", "", "TLS1.0", "TLS1.1", "TLS1.2","TLS1.3"]
 
 
 class Header:
-  state= False
-  data = "No header"
-  csp = "[NONE]"
-  hsts = "[NONE]"
-  x_content = "[NONE]"
-  x_frame = "[NONE]"
-
   def __init__(self):
     """ Constructor """
 
-    self.state=False
-    self.data="No header"
+    self.state= False
+    self.data = "No header"
+    self.csp = "[NONE]"
+    self.hsts = "[NONE]"
+    self.x_content = "[NONE]"
+    self.x_frame = "[NONE]"
 
 
   def check_header(self,security):
@@ -70,13 +67,13 @@ class Header:
 
 class MySocket:
 
-  URL = None
-  socket = None
-  is_opened = False
-  TLS_PORT_OPENED = False
-
   def __init__(self, url):
     """ Constructor """
+    if not isinstance(url, URL):
+      raise ValueError("Provided url must be an instance of the URL class !")
+    
+    self.URL = url
+    self.is_opened = False
     self.set_url(url)
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     self.TLS_PORT_OPENED = self.URL.is_port_in_list(443) or self.check_port()
@@ -142,13 +139,10 @@ class MySocket:
 
 class SSLSocket(MySocket):
 
-  ssl_context = None
-  wrapped_socket = None
-  ssl_certificate = None
-  header = None
-
   def __init__(self, url):
     super().__init__(url)
+    self.ssl_context = None
+    self.wrapped_socket = None
     self.ssl_certificate = Certificate()
     self.header = Header()
 

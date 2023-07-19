@@ -18,13 +18,13 @@ from .base import Base
 
 class Target(Base):
   """Main enumeration module"""
-
-  results = []
-  unique_targets = []
-
+  
   def __init__(self, options):
     """ Constructor """
     super().__init__(options)
+
+    self.results = []
+    self.unique_targets = []
 
     str_file_option_handle(self, "TARGET", "FILE")
     self.unique_targets = list(set(self.options["TARGET"]))

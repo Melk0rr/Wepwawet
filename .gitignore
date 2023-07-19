@@ -4,7 +4,7 @@ __pycache__/
 .pytest_cache/
 
 # Tests folder
-tests/*
+tests/
 
 # Distribution / packaging
 .Python
@@ -13,3 +13,4 @@ build/
 
 *.egg-info
 .eggs/
+.vscode/
