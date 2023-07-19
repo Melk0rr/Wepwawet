@@ -30,7 +30,7 @@ def ask_shodan(self, target, api):
   except Exception as e:
     error_message = e
     self.handle_exception(
-        e, f"Error while retreiving shodan informations for {target['host']}")
+        e, f"Error while retreiving shodan informations for {target.get_domain()}: {e}")
 
   # Set URL geo location
   target.set_geo_location(shodan_request.get(

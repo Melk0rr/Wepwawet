@@ -20,6 +20,6 @@ def ping(target):
     out_function[response](f"{host_ip} {msg_variation} to ping command")
   
   else:
-    ColorPrint.red(f"No IP to ping for {target.get_host()}. Ping aborted")
+    ColorPrint.red(f"No IP to ping for {target.get_domain()}. Ping aborted")
 
   return response == 0
