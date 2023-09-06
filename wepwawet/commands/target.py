@@ -50,7 +50,7 @@ class Target(Base):
     print("\nExporting results to csv...")
 
     if len(self.results) <= 0:
-      ColorPrint.red(f"Error while exporting results to CSV ({len(self.results)} results)s")
+      ColorPrint.red(f"Error while exporting results to CSV: ({len(self.results)} results)s")
       return 0
 
     with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
@@ -103,9 +103,9 @@ class Target(Base):
       print("\nChecking Who.is...")
       whois(self, target)
 
-    final_res = {
-        **target.to_dictionary(),
-        **options_res
+    return {
+      **target.to_dictionary(),
+      **options_res
     }
 
 
