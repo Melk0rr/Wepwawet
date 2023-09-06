@@ -6,6 +6,9 @@ __pycache__/
 # Tests folder
 tests/
 
+# Ignore API file
+*/API.py
+
 # Distribution / packaging
 .Python
 build/
