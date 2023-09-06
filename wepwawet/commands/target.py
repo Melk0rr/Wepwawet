@@ -1,6 +1,7 @@
 """ Target module handling targeting operations and data gathering """
 import csv
 from time import sleep
+from multiprocessing import Pool
 
 from wepwawet.scanners.geoloc import geoloc
 from wepwawet.scanners.header import check_header
@@ -57,59 +58,62 @@ class Target(Base):
       writer.writeheader()
       writer.writerows(self.results)
 
+  def url_process(self, target):
+    """ Target process to deal with url data """
+    options_res = {}
+
+    # If option is provided run ping on the target
+    if self.options["--ping"]:
+      respond = ping(target)
+      options_res.update({ "ping": "YES" if respond else "NO" })
+
+    # If option is provided: check for informations with shodan API
+    if self.options["--shodan"]:
+      try:
+        from wepwawet.API import SHODAN_KEY
+
+      except Exception as err:
+        self.handle_exception(
+            err, "Unable to import API key - make sure API.py exists!")
+        return
+
+      options_res.update(ask_shodan(self, target, SHODAN_KEY))
+
+      # Sleep 1s to reduce shodan API calls
+      if target.get_ip():
+        sleep(1)
+
+    # If option is provided: do a simple http request to the target to retreive status and title
+    if self.options["--http-info"]:
+      print("\nGathering additional information from http requests...")
+      options_res.update(http_info(self, target))
+
+    # If option is provided: geo locate the target
+    if self.options["--geo-locate"]:
+      print(f"\nGeo locating the target...")
+      geoloc(self, target)
+
+    # If option is provided: do a simple check to the target to retreive TLS status
+    if self.options["--check-tls"]:
+      print("\nGathering additional information from https TLS acceptance...")
+      options_res.update(check_header(target))
+      options_res.update(check_tls(target))
+
+    if self.options["--whois"]:
+      print("\nChecking Who.is...")
+      whois(self, target)
+
+    final_res = {
+        **target.to_dictionary(),
+        **options_res
+    }
+
 
   def run(self):
     # Retreive IP of target and run initial configuration
-    for target in self.unique_targets:
-      options_res = {}
-
-      # If option is provided run ping on the target
-      if self.options["--ping"]:
-        respond = ping(target)
-        options_res.update({ "ping": "YES" if respond else "NO" })
-
-      # If option is provided: check for informations with shodan API
-      if self.options["--shodan"]:
-        try:
-          from wepwawet.API import SHODAN_KEY
-
-        except Exception as err:
-          self.handle_exception(
-              err, "Unable to import API key - make sure API.py exists!")
-          return
-
-        options_res.update(ask_shodan(self, target, SHODAN_KEY))
-
-        # Sleep 1s to reduce shodan API calls
-        if target.get_ip():
-          sleep(1)
-
-      # If option is provided: do a simple http request to the target to retreive status and title
-      if self.options["--http-info"]:
-        print("\nGathering additional information from http requests...")
-        options_res.update(http_info(self, target))
-
-      # If option is provided: geo locate the target
-      if self.options["--geo-locate"]:
-        print(f"\nGeo locating the target...")
-        geoloc(self, target)
-
-      # If option is provided: do a simple check to the target to retreive TLS status
-      if self.options["--check-tls"]:
-        print("\nGathering additional information from https TLS acceptance...")
-        options_res.update(check_header(target))
-        options_res.update(check_tls(target))
-
-      if self.options["--whois"]:
-        print("\nChecking Who.is...")
-        whois(self, target)
-
-      final_res = {
-          **target.to_dictionary(),
-          **options_res
-      }
-
-      self.results.append(final_res)
+    with Pool(processes=5) as pool:
+      for url_data in pool.imap_unordered(self.url_process, self.unique_targets):
+        self.results.append(url_data)
 
     # Export results to CSV if option is provided
     if self.options["--export-csv"]:
