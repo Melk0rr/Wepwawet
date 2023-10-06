@@ -4,13 +4,14 @@
 class Port:
   """ Port class """
 
-  def __init__(self, port_number=80, application="Unknown"):
+  def __init__(self, port_number=80, application="Unknown", state = "open"):
     """ Constructor """
     if not isinstance(port_number, int):
       raise ValueError(f"Invalid port number: {port_number} !")
       
     self.number = port_number
     self.application = application
+    self.state = state
 
   def get_number(self):
     """ Getter for port number """
@@ -20,6 +21,10 @@ class Port:
     """ Getter for application """
     return self.application
 
+  def get_state(self):
+    """ Getter for port open state """
+    return self.state
+
   def set_number(self, number):
     """ Setter for port number """
     if isinstance(number, int):
@@ -27,6 +32,10 @@ class Port:
 
     else:
       raise ValueError(f"Invalid port number: {number} !")
+
+  def set_state(self, new_state = "opened"):
+    """ Setter for port open state """
+    self.state = new_state
 
   def to_string(self):
     """ Returns a string based on port number and application """
