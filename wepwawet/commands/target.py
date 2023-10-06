@@ -10,6 +10,7 @@ from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
 from wepwawet.scanners.url import URL
+from wepwawet.scanners.nmap import nmap
 from wepwawet.scanners.whois import whois
 from wepwawet.utils.color_print import ColorPrint
 from wepwawet.utils.init_option_handle import str_file_option_handle
@@ -92,6 +93,11 @@ class Target(Base):
     if self.options["--geo-locate"]:
       print(f"\nGeo locating the target...")
       geoloc(self, target)
+
+    # If option is provided: scan target with nmap
+    if self.options["--nmap"]:
+      print("\nScanning target with nmap")
+      nmap(self, target)
 
     # If option is provided: do a simple check to the target to retreive TLS status
     if self.options["--check-tls"]:

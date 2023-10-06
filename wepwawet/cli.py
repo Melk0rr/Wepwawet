@@ -8,8 +8,9 @@ Options:
   -h --help                show this help message and exit
   -t --target              set target (comma separated, no spaces, if multiple)
   -f --file                set target (reads from file, one domain per line)
-  -p --ping                send a ping request to the target
+  -n --nmap                use nmap to scan target
   -o --output=FILENAME     save to filename
+  -p --ping                send a ping request to the target
   -s --shodan              request shodan API for informations
   -S --silent              simple output, one per line
   -v --verbose             print debug info and full request output
