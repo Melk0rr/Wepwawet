@@ -9,7 +9,7 @@ from wepwawet.scanners.http import http_info
 from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
-from wepwawet.scanners.url import URL
+from wepwawet.network.url import URL
 from wepwawet.scanners.nmap import nmap
 from wepwawet.scanners.whois import whois
 from wepwawet.utils.color_print import ColorPrint

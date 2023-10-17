@@ -1,4 +1,4 @@
-from wepwawet.scanners.ssl_socket import SSLSocket
+from wepwawet.network.ssl_socket import SSLSocket
 from wepwawet.utils.color_print import ColorPrint
 
 

@@ -3,7 +3,7 @@ import re
 import socket
 from urllib.parse import urlparse, urlsplit
 
-from wepwawet.scanners.port import Port
+from wepwawet.network.port import Port
 from wepwawet.utils.color_print import ColorPrint
 
 

@@ -1,6 +1,6 @@
 import nmap3
 
-from wepwawet.scanners.port import Port
+from wepwawet.network.port import Port
 
 nmap = nmap3.Nmap()
 

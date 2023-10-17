@@ -1,9 +1,9 @@
 import socket
 import ssl
 
-from wepwawet.scanners.port import Port
-from wepwawet.scanners.url import URL
-from wepwawet.scanners.certificate import Certificate
+from wepwawet.network.port import Port
+from wepwawet.network.url import URL
+from wepwawet.network.certificate import Certificate
 from wepwawet.utils.color_print import ColorPrint
 
 # Exemple Usage
