@@ -15,7 +15,8 @@ nmap_commands = {
 def set_target_ports(target, nmap_res):
   """ Set target ports based on nmap result """
 
-  for p in nmap_res[target.get_ip()].get("ports", []):
+  nmap_ip_res = nmap_res.get(target.get_ip(), {})
+  for p in nmap_ip_res.get("ports", []):
     product = p["service"].get("product", p["service"].get("name", "Unknown"))
     port = Port(int(p["portid"]), product, p.get("state", "opened"))
     target.append_open_port(port)
