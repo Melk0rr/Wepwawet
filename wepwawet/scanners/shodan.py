@@ -1,7 +1,7 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
 import requests
 
-from wepwawet.network.port import Port
+from wepwawet.scanners.port import Port
 
 
 def set_url_ports(target, shodan_request):
