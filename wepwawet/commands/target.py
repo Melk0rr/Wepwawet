@@ -70,19 +70,7 @@ class Target(Base):
 
     # If option is provided: check for informations with shodan API
     if self.options["--shodan"]:
-      try:
-        from wepwawet.API import SHODAN_KEY
-
-      except Exception as err:
-        self.handle_exception(
-            err, "Unable to import API key - make sure API.py exists!")
-        return
-
-      options_res.update(ask_shodan(self, target, SHODAN_KEY))
-
-      # Sleep 1s to reduce shodan API calls
-      if target.get_ip():
-        sleep(1)
+      options_res.update(ask_shodan(self, target))
 
     # If option is provided: do a simple http request to the target to retreive status and title
     if self.options["--http-info"]:
