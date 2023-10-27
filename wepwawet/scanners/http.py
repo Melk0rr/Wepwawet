@@ -14,7 +14,7 @@ def http_info(self, target):
     soup = BeautifulSoup(req.content, 'html.parser')
 
     http_status = req.status_code
-    http_title = soup.title.text
+    http_title = soup.title.text.replace("\n", "")
 
   except Exception as e:
     self.handle_exception(
