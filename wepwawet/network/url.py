@@ -135,7 +135,7 @@ class URL:
     try:
       ip = socket.gethostbyname(self.domain)
       self.ip = ip
-      ColorPrint.green(f"\n{self.domain}: {self.ip}")
+      ColorPrint.green(f"{self.domain}: {self.ip}")
 
     except:
       ColorPrint.red(f"Could not resolve IP address for {self.domain}")

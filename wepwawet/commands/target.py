@@ -33,11 +33,19 @@ class Target(Base):
     print(f"Investigating {len(self.unique_targets)} hosts...")
 
     # Clean up targets and init instances
-    for i in range(len(self.unique_targets)):
-      url = URL(self.unique_targets[i])
-      url.resolve_ip()
+    unique_urls = []
+    with Pool(processes=5) as pool:
+      for i, url in pool.imap_unordered(self.init_url, self.unique_targets):
+        unique_urls.append(url)
 
-      self.unique_targets[i] = url
+    self.unique_targets = unique_urls
+
+  def init_url(self, target):
+    """ Init url instance based on target index and resolve ip address """
+    url = URL(target)
+    url.resolve_ip()
+
+    return url
 
   def handle_exception(self, e, message=""):
     """ Function handling exception for the current class """
