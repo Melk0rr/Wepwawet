@@ -62,10 +62,14 @@ class Target(Base):
       ColorPrint.red(f"Error while exporting results to CSV: ({len(self.results)} results)s")
       return 0
 
-    with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
-      writer = csv.DictWriter(f, fieldnames=self.results[0].keys())
-      writer.writeheader()
-      writer.writerows(self.results)
+    try:
+      with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=self.results[0].keys())
+        writer.writeheader()
+        writer.writerows(self.results)
+
+    except Exception as e:
+      ColorPrint.red(f"{__class__.__name__} : {e} cannot save to CSV")
 
   def url_process(self, target):
     """ Target process to deal with url data """
