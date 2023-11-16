@@ -11,7 +11,6 @@ def geoloc(self, target):
     response = requests.get(req_url)
     res = response.content.decode()
     res = json.loads(res)
-    print(res)
 
     target.set_geo_location(res.get("city", ""), res.get("country", ""))
 
