@@ -68,7 +68,7 @@ class URL:
     """ Set the host related domains """
     self.related_domains = domains
 
-  def set_geo_location(self, city, country):
+  def set_geo_location(self, country, city):
     """ Set the geo location infos """
 
     if (city is None) or (len(city) <= 0):
