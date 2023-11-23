@@ -35,7 +35,7 @@ class Target(Base):
     # Clean up targets and init instances
     unique_urls = []
     with Pool(processes=5) as pool:
-      for i, url in pool.imap_unordered(self.init_url, self.unique_targets):
+      for url in pool.imap_unordered(self.init_url, self.unique_targets):
         unique_urls.append(url)
 
     self.unique_targets = unique_urls
@@ -97,7 +97,6 @@ class Target(Base):
 
     # If option is provided: scan target with nmap
     if self.options["--nmap"]:
-      print("\nScanning target with nmap")
       nmap(self, target)
 
     # If option is provided: do a simple check to the target to retreive TLS status

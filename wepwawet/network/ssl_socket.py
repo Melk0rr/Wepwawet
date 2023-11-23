@@ -254,7 +254,7 @@ class SSLSocket(MySocket):
     enabled = False
     
     if self.wrap_ssl_socket(tls_version=tls_to_test):
-      ColorPrint.green(self.get_ssl_version())
+      ColorPrint.green(f"{self.URL.get_domain()} supports {self.get_ssl_version()}")
       enabled = True
 
     return enabled

@@ -26,7 +26,8 @@ def nmap(self, target, command = "ver-detect"):
 
   if command not in nmap_commands.keys():
     raise ValueError(f"{command} is not a valid nmap command. Please use one of the following commands: \n{nmap_commands.keys()}")
-
+  
+  print(f"Scanning {target.get_domain()} with nmap...")
   nmap_res = nmap_commands[command](target.get_ip())
 
   if command == "ver-detect":
