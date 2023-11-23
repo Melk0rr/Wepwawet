@@ -20,7 +20,7 @@ def http_info(self, target):
     self.handle_exception(
         e, f"Error while requesting {target.get_domain()}. Make sure the target is accessible")
 
-  print(f"{target.get_domain()} HTTP: \n{http_title}({http_status})")
+  print(f"{target.get_domain()} HTTP: \n{http_title} ({http_status})")
 
   return {
       "http_status": http_status,
