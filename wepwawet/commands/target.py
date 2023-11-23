@@ -51,6 +51,7 @@ class Target(Base):
     """ Function handling exception for the current class """
     if self.options["--verbose"]:
       print(e)
+      
     if message:
       ColorPrint.red(message)
 
