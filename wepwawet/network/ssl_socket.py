@@ -97,7 +97,7 @@ class MySocket:
 
   def check_port(self, port=443):
     """ Check whether or not the given port is open on the URL """
-    check = self.socket.connect_ex((self.URL.get_ip(), port))
+    check = self.socket.connect_ex((self.URL.get_ip().get_address(), port))
     if check == 0:
       self.URL.append_open_port(Port(port_number=port))
 

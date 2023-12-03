@@ -4,7 +4,7 @@ import requests
 
 
 def geoloc(self, target):
-  req_url = f"http://ipwho.is/{target.get_ip()}"
+  req_url = f"http://ipwho.is/{target.get_ip().get_address()}"
   res = {}
 
   try:

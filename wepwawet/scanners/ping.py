@@ -10,7 +10,7 @@ out_function = {
 
 def ping(target):
   """ Run ping command on the provided host """
-  host_ip = target.get_ip()
+  host_ip = target.get_ip().get_address()
   response = 1
 
   if host_ip:

@@ -13,7 +13,7 @@ def set_url_ports(target, shodan_request):
   for i in range(len(port_list)):
     cpe = cpe_list[i] if i < len(cpe_list) else "Unknown"
     port = Port(int(port_list[i]), cpe)
-    target.append_open_port(port)
+    target.get_ip().append_open_port(port)
 
 
 def ask_shodan(self, target):
@@ -27,7 +27,7 @@ def ask_shodan(self, target):
   try:
     # Asking shodan for the specified IP address
     if target.get_ip():
-      shodan_request = requests.get(f"https://internetdb.shodan.io/{target.get_ip()}").json()
+      shodan_request = requests.get(f"https://internetdb.shodan.io/{target.get_ip().get_address()}").json()
 
   except Exception as e:
     error_message = e
