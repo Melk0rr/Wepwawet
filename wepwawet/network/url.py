@@ -1,6 +1,7 @@
 """ URL module adressing url object behaviour """
 import re
 import socket
+from typing import List
 from urllib.parse import urlparse, urlsplit
 
 from wepwawet.network.port import Port
@@ -10,7 +11,7 @@ from wepwawet.utils.color_print import ColorPrint
 class URL:
   """ URL class implementation """
 
-  def __init__(self, url):
+  def __init__(self, url: str):
     """ Constructor """
     # Inject protocol if not there
     if not re.match(r'http(s?):', url):
@@ -20,55 +21,38 @@ class URL:
       raise ValueError(f"Invalid URL provided: {url} !")
 
     self.host = url
-    self.domain = self.extract_domain()
-    self.ip = ""
-    self.open_ports = []
+    self.netloc = urlsplit(self.host).netloc
+    self.ip = None
     self.related_domains = []
     self.geo_location = {
         "city": "",
         "country": ""
     }
 
-  def get_host(self):
+  def get_host(self) -> str:
     """ Getter for the URL """
     return self.host
 
-  def get_ip(self):
+  def get_ip(self) -> IPv4:
     """ Getter for the IP """
     return self.ip
 
-  def get_domain(self):
+  def get_domain(self) -> str:
     """ Getter for the Domain """
-    return self.domain
+    return self.netloc
 
-  def get_port_numbers(self):
-    """ Getter for the Port numbers """
-    return [p.get_number() for p in self.open_ports]
-
-  def get_port_strings(self):
-    """ Getter for the Port strings """
-    return [p.to_string() for p in self.open_ports]
-
-  def get_geo_str(self):
+  def get_geo_str(self) -> str:
     """ Returns a string based on the geolocation infos """
     city = self.geo_location['city']
     country = self.geo_location['country']
     separator = ", " if city and country else ""
     return f"{city}{separator}{country}"
 
-  def set_open_ports(self, ports):
-    """ Set the open ports """
-    # Clear the list of open ports
-    self.open_ports.clear()
-
-    for p in ports:
-      self.append_open_port(p)
-
-  def set_related_domains(self, domains):
+  def set_related_domains(self, domains: List[str]):
     """ Set the host related domains """
     self.related_domains = domains
 
-  def set_geo_location(self, country, city):
+  def set_geo_location(self, country: str, city: str):
     """ Set the geo location infos """
 
     if (city is None) or (len(city) <= 0):
@@ -84,44 +68,7 @@ class URL:
 
     print(f"{self.domain} is hosted in {self.get_geo_str()}")
 
-  def is_port_in_list(self, port):
-    """ Check if the given port is in the list of ports """
-    port_number = port
-
-    if isinstance(port, Port):
-      port_number = port.get_number()
-
-    return port_number in self.get_port_numbers()
-
-  def append_open_port(self, port):
-    """ Append the port to the list of open ports """
-    is_port = isinstance(port, Port)
-    is_number = isinstance(port, int)
-
-    if not (is_port or is_number):
-      raise ValueError(
-          "Provided port must be an instance of class Port or an integer")
-
-    if not self.is_port_in_list(port):
-      if is_number:
-        port = Port(port_number=port)
-
-      self.open_ports.append(port)
-
-    else:
-      print(f"This port is already in the list of open ports")
-
-  def remove_port(self, port):
-    """ Remove the port from the list of open ports """
-    index = self.get_port_numbers().index(port)
-
-    del self.open_ports[index]
-
-  def extract_domain(self):
-    """ Extract domain from url """
-    return urlsplit(self.host).netloc
-
-  def is_valid_url(self, url):
+  def is_valid_url(self, url: str):
     """ Checks whether the given URL is valid """
     try:
       parsed = urlparse(url)
@@ -133,20 +80,20 @@ class URL:
   def resolve_ip(self):
     """ Resolves the IP address for the current URL """
     try:
-      ip = socket.gethostbyname(self.domain)
-      self.ip = ip
-      ColorPrint.green(f"{self.domain}: {self.ip}")
+      ip = socket.gethostbyname(self.netloc)
+      self.ip = IPv4(ip)
+      ColorPrint.green(f"{self.netloc}: {self.ip.get_address()}")
 
     except:
-      ColorPrint.red(f"Could not resolve IP address for {self.domain}")
+      ColorPrint.red(f"Could not resolve IP address for {self.netloc}")
 
-  def to_dictionary(self):
+  def to_dictionary(self) -> Dict:
     """ Returns a dictionary based on the instance attributes """
     return {
         "host": self.domain,
         "ip": self.ip,
         **self.geo_location,
         "domains": ', '.join(f"{x}" for x in self.related_domains),
-        "ports": ', '.join(f"{x}" for x in self.get_port_numbers()),
-        "products": ', '.join(f"{x}" for x in self.get_port_strings())
+        "ports": ', '.join(f"{x}" for x in self.ip.get_port_numbers()),
+        "products": ', '.join(f"{x}" for x in self.ip.get_port_strings())
     }

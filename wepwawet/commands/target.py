@@ -97,7 +97,12 @@ class Target(Base):
 
     # If option is provided: scan target with nmap
     if self.options["--nmap"]:
-      nmap(self, target)
+      if not target.get_ip().get_scanned():
+        nmap(self, target)
+        target.get_ip().set_scanned(True)
+
+      else:
+        print(f"{target.get_domain()} ip was already scanned")
 
     # If option is provided: do a simple check to the target to retreive TLS status
     if self.options["--check-tls"]:
