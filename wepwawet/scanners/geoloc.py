@@ -12,7 +12,7 @@ def geoloc(self, target):
     res = response.content.decode()
     res = json.loads(res)
 
-    target.set_geo_location(res.get("city", ""), res.get("country", ""))
+    target.set_geo_location(city=res.get("city", ""), country=res.get("country", ""))
 
   except Exception as e:
     self.handle_exception(
