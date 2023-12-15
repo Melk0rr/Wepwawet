@@ -26,13 +26,12 @@ def nmap(self, target, command = "ver-detect"):
 
   if command not in nmap_commands.keys():
     raise ValueError(f"{command} is not a valid nmap command. Please use one of the following commands: \n{nmap_commands.keys()}")
-  
-  print(f"Scanning {target.get_domain()} with nmap...")
+
   nmap_res = nmap_commands[command](target.get_ip().get_address())
 
   if command == "ver-detect":
     set_target_ports(target, nmap_res)
-    target_ports = target.get_port_strings()
+    target_ports = target.get_ip().get_port_strings()
     target_ports_list = "\n".join(target_ports)
     print(f"Found {len(target_ports)} ports on {target.get_domain()}:\n{target_ports_list}")
 

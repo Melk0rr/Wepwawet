@@ -7,7 +7,6 @@ def http_info(self, target):
   """ Performs a simple HTTP request to the given target """
 
   http_status = http_title = ""
-  print(f"\nRequesting {target.get_domain()}...")
 
   try:
     req = requests.get(target.get_host())

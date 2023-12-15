@@ -1,10 +1,10 @@
 """ URL module adressing url object behaviour """
 import re
 import socket
-from typing import List
+from typing import List, Dict
 from urllib.parse import urlparse, urlsplit
 
-from wepwawet.network.port import Port
+from wepwawet.network.ipv4 import IPv4
 from wepwawet.utils.color_print import ColorPrint
 
 
@@ -48,6 +48,10 @@ class URL:
     separator = ", " if city and country else ""
     return f"{city}{separator}{country}"
 
+  def set_ip(self, ip: IPv4):
+    """ Setter for url ip address """
+    self.ip = ip
+
   def set_related_domains(self, domains: List[str]):
     """ Set the host related domains """
     self.related_domains = domains
@@ -66,9 +70,9 @@ class URL:
         "country": country
     }
 
-    print(f"{self.domain} is hosted in {self.get_geo_str()}")
+    print(f"{self.netloc} is hosted in {self.get_geo_str()}")
 
-  def is_valid_url(self, url: str):
+  def is_valid_url(self, url: str) -> bool:
     """ Checks whether the given URL is valid """
     try:
       parsed = urlparse(url)
@@ -77,11 +81,12 @@ class URL:
     except:
       return False
 
-  def resolve_ip(self):
+  def resolve_ip(self, ip_track: Dict = {}):
     """ Resolves the IP address for the current URL """
     try:
       ip = socket.gethostbyname(self.netloc)
       self.ip = IPv4(ip)
+
       ColorPrint.green(f"{self.netloc}: {self.ip.get_address()}")
 
     except:
@@ -90,8 +95,8 @@ class URL:
   def to_dictionary(self) -> Dict:
     """ Returns a dictionary based on the instance attributes """
     return {
-        "host": self.domain,
-        "ip": self.ip,
+        "host": self.netloc,
+        "ip": self.ip.get_address(),
         **self.geo_location,
         "domains": ', '.join(f"{x}" for x in self.related_domains),
         "ports": ', '.join(f"{x}" for x in self.ip.get_port_numbers()),
