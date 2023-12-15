@@ -40,6 +40,8 @@ def check_header(target):
       "Cert reason": local_ssl_socket.ssl_certificate.reason,
       "Cert message": local_ssl_socket.ssl_certificate.message,
       "Cert validity": local_ssl_socket.ssl_certificate.validity,
+      "Cert CN": local_ssl_socket.ssl_certificate.issued_for_cn,
+      "Cert O": local_ssl_socket.ssl_certificate.issued_for_o,
       "Certificate": local_ssl_socket.ssl_certificate.data,
       "Header csp": local_ssl_socket.header.csp,
       "Header hsts": local_ssl_socket.header.hsts,
