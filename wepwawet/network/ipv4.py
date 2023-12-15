@@ -1,8 +1,8 @@
 """ IPv4 module """
 from typing import List
 
-from argos.model.base.port import Port
-from argos.utils.color_print import ColorPrint
+from .port import Port
+from wepwawet.utils.color_print import ColorPrint
 
 
 class IPv4Base:
@@ -117,36 +117,27 @@ class IPv4(IPv4Base):
       self.mask = IPv4Mask(int(net))
 
     self.ports = []
-    self.scanned = False
 
   def get_mask(self) -> IPv4Mask:
     """ Getter for ip mask instance """
     return self.mask
 
-  def get_scanned(self) -> bool:
-    """ Getter for scanned status """
-    return self.scanned
-
   def get_port_numbers(self) -> List[int]:
     """ Getter for the Port numbers """
-    return [p.get_number() for p in self.open_ports]
+    return [p.get_number() for p in self.ports]
 
   def get_port_strings(self) -> List[int]:
     """ Getter for the Port strings """
-    return [p.to_string() for p in self.open_ports]
+    return [p.to_string() for p in self.ports]
 
   def set_mask(self, mask: int | str):
     """ Setter for ip mask """
     self.mask = IPv4Mask(mask)
 
-  def set_scanned(self, scanned: bool):
-    """ Scanned status setter """
-    self.scanned = scanned
-
   def set_open_ports(self, ports: List[int] | List[Port]):
     """ Set the open ports """
     # Clear the list of open ports
-    self.open_ports.clear()
+    self.ports.clear()
 
     for p in ports:
       self.append_open_port(p)
@@ -173,7 +164,7 @@ class IPv4(IPv4Base):
       if is_number:
         port = Port(port_number=port)
 
-      self.open_ports.append(port)
+      self.ports.append(port)
 
     else:
       print(f"This port is already in the list of open ports")
@@ -182,7 +173,7 @@ class IPv4(IPv4Base):
     """ Remove the port from the list of open ports """
     index = self.get_port_numbers().index(port)
 
-    del self.open_ports[index]
+    del self.ports[index]
 
   def is_in_subnet(self, net_addr: str) -> bool:
     """ Checks if the current ip is in the provided subnet """
