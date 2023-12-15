@@ -231,9 +231,8 @@ class SSLSocket(MySocket):
 
       except Exception as err:
         self.ssl_certificate.state = False
-
-        ColorPrint.yellow(
-            f"In {__class__.__name__} : Wrap error {index_ssl[tls_version]}: {err}")
+#        ColorPrint.yellow(
+#            f"In {__class__.__name__} : Wrap error ici {index_ssl[tls_version]}: {err}")
 
     return self.ssl_certificate.state
 
@@ -248,13 +247,7 @@ class SSLSocket(MySocket):
 
   def is_tls_enabled(self, tls_to_test):
     """ Checks if TLS protocol is enabled """
-    enabled = False
-    
-    if self.wrap_ssl_socket(tls_version=tls_to_test):
-      ColorPrint.green(f"{self.URL.get_domain()} supports {self.get_ssl_version()}")
-      enabled = True
-
-    return enabled
+    return self.wrap_ssl_socket(tls_version=tls_to_test)
 
   def get_tls_state(self):
     """Check evry specified TLS version State"""
@@ -274,10 +267,14 @@ class SSLSocket(MySocket):
 
         if response:
           if not (version_name == "TLSv1.3" and response != "TLSv1.3"):
+            ColorPrint.green(f"{self.URL.get_domain()} supports {self.get_ssl_version()} ")
             value = True
 
       except Exception as err:
         ColorPrint.yellow(f"{err}: cannot retrieve data for {version}")
+
+      if not value:
+        ColorPrint.red(f"{self.URL.get_domain()} does not supports {version_name}")
 
       res[version_name] = value
       self.close_socket()

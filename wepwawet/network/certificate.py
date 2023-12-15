@@ -115,20 +115,33 @@ class Certificate:
 
   data = []
   validity = 0
+  issued_for_cn =""
+  issued_for_o =""
+
+        
+  def get_value(self,value,parameter):
+    if type(value[0]) is tuple:
+        return self.get_value(value[0],parameter)
+ 
+    else:
+      if value[0] == parameter:
+        return value[1]
+ 
+      else:
+        return -1
 
   def analyse(self):
     """ Analyse certificate data """
     res = False
     try:
       if self.state:
-        expiring_dt = datetime.strptime(
-            self.data["notAfter"], "%b %d %H:%M:%S %Y %Z")
-        diff = expiring_dt - datetime.now()
-        self.validity = diff.days
-
+        self.validity = datetime.strptime(self.data["notAfter"], "%b %d %H:%M:%S %Y %Z")
+        self.issued_for_cn = self.get_value(self.data["subject"], "commonName")
+        self.issued_for_o = self.get_value(self.data["subject"], "organisation")
         res = True
 
     except Exception as err:
       ColorPrint.yellow(f"In {__class__.__name__} : {err} ")
 
     return res
+  
