@@ -10,6 +10,7 @@ from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
 from wepwawet.network.url import URL
+from wepwawet.network.ipv4 import IPv4
 from wepwawet.scanners.nmap import nmap
 from wepwawet.scanners.whois import whois
 from wepwawet.utils.color_print import ColorPrint
@@ -17,6 +18,7 @@ from wepwawet.utils.init_option_handle import str_file_option_handle
 
 from .base import Base
 
+ip_track = {}
 
 class Target(Base):
   """Main enumeration module"""
@@ -51,10 +53,11 @@ class Target(Base):
     """ Function handling exception for the current class """
     if self.options["--verbose"]:
       print(e)
+
     if message:
       ColorPrint.red(message)
 
-  def res_2_csv(self):
+  def export_csv(self):
     """ Write the results into a CSV file """
     print("\nExporting results to csv...")
 
@@ -64,7 +67,7 @@ class Target(Base):
 
     try:
       with open(self.options["--export-csv"], "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=self.results[0].keys())
+        writer = csv.DictWriter(f, fieldnames=self.results[0].keys(), delimiter='|')
         writer.writeheader()
         writer.writerows(self.results)
 
@@ -74,9 +77,10 @@ class Target(Base):
   def url_process(self, target):
     """ Target process to deal with url data """
     options_res = {}
-
+    target_ip = target.get_ip().get_address()
     # If option is provided run ping on the target
     if self.options["--ping"]:
+      print(f"Pinging {target.get_domain()}...")
       respond = ping(target)
       options_res.update({ "ping": "YES" if respond else "NO" })
 
@@ -86,22 +90,25 @@ class Target(Base):
 
     # If option is provided: do a simple http request to the target to retreive status and title
     if self.options["--http-info"]:
-      print("\nGathering additional information from http requests...")
+      print(f"\nGetting HTTP infos from {target.get_domain()}...")
       options_res.update(http_info(self, target))
 
     # If option is provided: geo locate the target
     if self.options["--geo-locate"]:
-      print(f"\nGeo locating the target...")
+      print(f"\nGeo locating {target.get_domain()}...")
       geoloc(self, target)
 
     # If option is provided: scan target with nmap
     if self.options["--nmap"]:
-      if not target.get_ip().get_scanned():
+      # Check if the ip was already scanned (some url may share same ip)
+      if not target_ip in ip_track:
+        print(f"Scanning {target.get_domain()} with nmap...")
         nmap(self, target)
-        target.get_ip().set_scanned(True)
+        ip_track[target_ip] = target.get_ip()
 
       else:
-        print(f"{target.get_domain()} ip was already scanned")
+        print(f"{target.get_domain()} ip was already scanned. Skipping...")
+        target.set_ip(ip_track[target_ip])
 
     # If option is provided: do a simple check to the target to retreive TLS status
     if self.options["--check-tls"]:
@@ -127,4 +134,4 @@ class Target(Base):
 
     # Export results to CSV if option is provided
     if self.options["--export-csv"]:
-      self.res_2_csv()
+      self.export_csv()
