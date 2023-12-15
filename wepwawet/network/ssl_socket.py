@@ -76,7 +76,7 @@ class MySocket:
     self.is_opened = False
     self.set_url(url)
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.TLS_PORT_OPENED = self.URL.is_port_in_list(443) or self.check_port()
+    self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
 
   def get_url(self):
     """ Getter for the URL """
@@ -99,7 +99,7 @@ class MySocket:
     """ Check whether or not the given port is open on the URL """
     check = self.socket.connect_ex((self.URL.get_ip().get_address(), port))
     if check == 0:
-      self.URL.append_open_port(Port(port_number=port))
+      self.URL.get_ip().append_open_port(Port(port_number=port))
 
     return check == 0
 
@@ -130,9 +130,6 @@ class MySocket:
     """ Close the socket """
     if self.is_opened:
       self.socket.close()
-
-    else:
-      print(f"In {__class__.__name__} : Trying to close an unexisting socket")
 
     self.is_opened = False
 
