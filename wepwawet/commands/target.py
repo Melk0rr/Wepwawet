@@ -32,12 +32,13 @@ class Target(Base):
 
     str_file_option_handle(self, "TARGET", "FILE")
     self.unique_targets = list(set(self.options["TARGET"]))
-    print(f"Investigating {len(self.unique_targets)} hosts...")
+    print(f"Investigating {len(self.unique_targets)} hosts")
+    print("Initializing...")
 
     # Clean up targets and init instances
     unique_urls = []
-    with Pool(processes=5) as pool:
-      for url in pool.imap_unordered(self.init_url, self.unique_targets):
+    with Pool(processes=10) as pool:
+      for url in pool.map(self.init_url, self.unique_targets):
         unique_urls.append(url)
 
     self.unique_targets = unique_urls
@@ -80,7 +81,6 @@ class Target(Base):
     target_ip = target.get_ip_address()
     # If option is provided run ping on the target
     if self.options["--ping"]:
-      print(f"Pinging {target.get_domain()}...")
       respond = ping(self, target)
       options_res.update({ "ping": "YES" if respond else "NO" })
 
@@ -127,8 +127,9 @@ class Target(Base):
 
 
   def run(self):
+    print("\nProcessing targets...")
     # Retreive IP of target and run initial configuration
-    with Pool(processes=5) as pool:
+    with Pool(processes=10) as pool:
       for url_data in pool.imap_unordered(self.url_process, self.unique_targets):
         self.results.append(url_data)
 

@@ -89,7 +89,6 @@ class URL:
   def resolve_ip(self, ip_track: Dict = {}):
     """ Resolves the IP address for the current URL """
     try:
-      print(f"Netloc: {self.netloc}")
       ip = socket.gethostbyname(self.netloc)
       
       if ip:
@@ -97,8 +96,8 @@ class URL:
 
       ColorPrint.green(f"{self.netloc}: {self.ip.get_address()}")
 
-    except ValueError as e:
-      ColorPrint.red(f"Could not resolve IP address for {self.netloc}: {e}")
+    except Exception as e:
+      ColorPrint.red(f"{self.netloc}: could not resolve IP address > {e}")
 
   def to_dictionary(self) -> Dict:
     """ Returns a dictionary based on the instance attributes """
