@@ -48,6 +48,11 @@ class URL:
     separator = ", " if city and country else ""
     return f"{city}{separator}{country}"
 
+  def get_ip_address(self) -> str:
+    """ Returns current ip address string """
+    if self.ip:
+      return self.ip.get_address()
+
   def set_ip(self, ip: IPv4):
     """ Setter for url ip address """
     self.ip = ip
@@ -84,21 +89,27 @@ class URL:
   def resolve_ip(self, ip_track: Dict = {}):
     """ Resolves the IP address for the current URL """
     try:
+      print(f"Netloc: {self.netloc}")
       ip = socket.gethostbyname(self.netloc)
-      self.ip = IPv4(ip)
+      
+      if ip:
+        self.ip = IPv4(ip)
 
       ColorPrint.green(f"{self.netloc}: {self.ip.get_address()}")
 
-    except:
-      ColorPrint.red(f"Could not resolve IP address for {self.netloc}")
+    except ValueError as e:
+      ColorPrint.red(f"Could not resolve IP address for {self.netloc}: {e}")
 
   def to_dictionary(self) -> Dict:
     """ Returns a dictionary based on the instance attributes """
+
+    formated_ports = ', '.join(f"{x}" for x in self.ip.get_port_numbers()) if self.ip else ""
+    formated_ports_str = ', '.join(f"{x}" for x in self.ip.get_port_strings()) if self.ip else ""
     return {
         "host": self.netloc,
-        "ip": self.ip.get_address(),
+        "ip": self.get_ip_address(),
         **self.geo_location,
         "domains": ', '.join(f"{x}" for x in self.related_domains),
-        "ports": ', '.join(f"{x}" for x in self.ip.get_port_numbers()),
-        "products": ', '.join(f"{x}" for x in self.ip.get_port_strings())
+        "ports": formated_ports,
+        "products": formated_ports_str
     }

@@ -77,11 +77,11 @@ class Target(Base):
   def url_process(self, target):
     """ Target process to deal with url data """
     options_res = {}
-    target_ip = target.get_ip().get_address()
+    target_ip = target.get_ip_address()
     # If option is provided run ping on the target
     if self.options["--ping"]:
       print(f"Pinging {target.get_domain()}...")
-      respond = ping(target)
+      respond = ping(self, target)
       options_res.update({ "ping": "YES" if respond else "NO" })
 
     # If option is provided: check for informations with shodan API
@@ -104,7 +104,7 @@ class Target(Base):
       if not target_ip in ip_track:
         print(f"Scanning {target.get_domain()} with nmap...")
         nmap(self, target)
-        ip_track[target_ip] = target.get_ip()
+        ip_track[target_ip] = target.get_ip_address()
 
       else:
         print(f"{target.get_domain()} ip was already scanned. Skipping...")

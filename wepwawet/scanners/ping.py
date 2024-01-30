@@ -8,10 +8,11 @@ out_function = {
   1: ColorPrint.red
 }
 
-def ping(target):
+def ping(self, target):
   """ Run ping command on the provided host """
-  host_ip = target.get_ip().get_address()
   response = 1
+
+  host_ip = target.get_ip_address()
 
   if host_ip:
     response = os.system("ping -w 100 " + host_ip)
@@ -21,5 +22,5 @@ def ping(target):
   
   else:
     ColorPrint.red(f"No IP to ping for {target.get_domain()}. Ping aborted")
-
+    
   return response == 0

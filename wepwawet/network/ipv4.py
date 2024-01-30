@@ -15,7 +15,7 @@ class IPv4Base:
       raise ValueError(f"Invalid IP address provided: {addr}")
 
     self.address: str = addr  
-    self.bytes: List[bytes] = [ (int(x)).to_bytes() for x in addr_split ]
+    self.bytes: List[bytes] = [ (int(x)).to_bytes(1, byteorder="little") for x in addr_split ]
 
   def get_address(self) -> str:
     """ Getter for ip string address """
