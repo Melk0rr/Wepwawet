@@ -1,5 +1,5 @@
 """ Simple module to ping a host """
-import os
+from subprocess import Popen, PIPE, STDOUT
 
 from wepwawet.utils.color_print import ColorPrint
 
@@ -15,12 +15,17 @@ def ping(self, target):
   host_ip = target.get_ip_address()
 
   if host_ip:
-    response = os.system("ping -w 100 " + host_ip)
+    print(f"{target.get_domain()}, pinging", end="...")
+
+    ping = Popen("ping -w 100 " + host_ip, stderr=STDOUT, stdout=PIPE)
+    ping.communicate()
+
+    response = ping.returncode
 
     msg_variation = "responds" if response == 0 else "does not respond"
-    out_function[response](f"{host_ip} {msg_variation} to ping command")
+    out_function[response](f"{host_ip} {msg_variation} to ping")
   
   else:
-    ColorPrint.red(f"No IP to ping for {target.get_domain()}. Ping aborted")
+    ColorPrint.red(f"{target.get_domain()}, no IP to ping")
     
   return response == 0
