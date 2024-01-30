@@ -90,24 +90,21 @@ class Target(Base):
 
     # If option is provided: do a simple http request to the target to retreive status and title
     if self.options["--http-info"]:
-      print(f"\nGetting HTTP infos from {target.get_domain()}...")
       options_res.update(http_info(self, target))
 
     # If option is provided: geo locate the target
     if self.options["--geo-locate"]:
-      print(f"\nGeo locating {target.get_domain()}...")
       geoloc(self, target)
 
     # If option is provided: scan target with nmap
     if self.options["--nmap"]:
       # Check if the ip was already scanned (some url may share same ip)
       if not target_ip in ip_track:
-        print(f"Scanning {target.get_domain()} with nmap...")
         nmap(self, target)
         ip_track[target_ip] = target.get_ip_address()
 
       else:
-        print(f"{target.get_domain()} ip was already scanned. Skipping...")
+        print(f"{target.get_domain()} IP was already scanned. Skipping...")
         target.set_ip(ip_track[target_ip])
 
     # If option is provided: do a simple check to the target to retreive TLS status

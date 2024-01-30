@@ -1,18 +1,28 @@
 import json
-
 import requests
+
+from wepwawet.utils.color_print import ColorPrint
 
 
 def geoloc(self, target):
   req_url = f"http://ipwho.is/{target.get_ip().get_address()}"
   res = {}
 
+  print(f"{target.get_domain()}, geo locating", end="...")
   try:
     response = requests.get(req_url)
     res = response.content.decode()
     res = json.loads(res)
 
-    target.set_geo_location(city=res.get("city", ""), country=res.get("country", ""))
+    city = res.get("city", "")
+    country = res.get("country", "")
+    target.set_geo_location(city=city, country=country)
+
+    if country:
+      ColorPrint.green(f"Location found {city}, {country}")
+
+    else:
+      ColorPrint.red("Location not found")
 
   except Exception as e:
     self.handle_exception(
