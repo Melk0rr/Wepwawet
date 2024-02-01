@@ -65,10 +65,10 @@ class MySocket:
     self.is_opened = False
     self.set_url(url)
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    if self.socket:
-      self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) if self.URL.get_ip() else self.check_port()
-    else:
-      self.TLS_PORT_OPENED = False
+
+    self.TLS_PORT_OPENED = False
+    if self.URL.get_ip():
+      self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
 
   def get_url(self):
     """ Getter for the URL """
@@ -89,11 +89,13 @@ class MySocket:
 
   def check_port(self, port=443):
     """ Check whether or not the given port is open on the URL """
-    check = self.socket.connect_ex((self.URL.get_ip().get_address(), port))
-    if check == 0:
-      self.URL.get_ip().append_open_port(Port(port_number=port))
+    check = False
+    if self.URL.get_ip():
+      check = self.socket.connect_ex((self.URL.get_ip_address(), port)) == 0
+      if check:
+        self.URL.get_ip().append_open_port(Port(port_number=port))
 
-    return check == 0
+    return check
 
   def open_socket(self):
     """ Open the socket """
