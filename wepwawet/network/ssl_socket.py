@@ -264,7 +264,3 @@ class SSLSocket(MySocket):
 
     return res
   
-
-  
-
-
