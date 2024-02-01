@@ -2,7 +2,6 @@ from wepwawet.network.ssl_socket import SSLSocket
 from wepwawet.utils.color_print import ColorPrint
 
 
-
 def check_header(target):
   """ Main Header function : Retrieve Header """
   response = {}
