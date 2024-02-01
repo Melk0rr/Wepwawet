@@ -19,6 +19,7 @@ def check_header(target):
 
       try:
         local_ssl_socket.header.analyse()
+        local_ssl_socket.header.print_result()
       except Exception as e:
         ColorPrint.red(f"{e} : Error while analysing Header of {target.get_domain()}")
 
@@ -32,8 +33,6 @@ def check_header(target):
     ColorPrint.red(
         f"{e} : Error while retrieving Header informations for {target.get_domain()}")
  
-
-
   response = {
       "Cert State":  local_ssl_socket.ssl_certificate.state,
       "Cert code": local_ssl_socket.ssl_certificate.code,
@@ -42,13 +41,12 @@ def check_header(target):
       "Cert validity": local_ssl_socket.ssl_certificate.validity,
       "Cert CN": local_ssl_socket.ssl_certificate.issued_for_cn,
       "Cert O": local_ssl_socket.ssl_certificate.issued_for_o,
-      "Certificate": local_ssl_socket.ssl_certificate.data,
-      "Header csp": local_ssl_socket.header.csp,
-      "Header hsts": local_ssl_socket.header.hsts,
-      "Header x-frame": local_ssl_socket.header.x_frame,
-      "Header x-content": local_ssl_socket.header.x_content,
-      "Header": local_ssl_socket.header.data
+      "Certificate": local_ssl_socket.ssl_certificate.data,      
+       "Header": local_ssl_socket.header.data
   }
+   # add header CSP values 
+  response.update(local_ssl_socket.header.security_dict.items())
+
 
   local_ssl_socket.close_socket()
   return response

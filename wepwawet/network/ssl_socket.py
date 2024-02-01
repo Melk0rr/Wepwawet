@@ -6,23 +6,6 @@ from wepwawet.network.url import URL
 from wepwawet.network.certificate import Certificate
 from wepwawet.utils.color_print import ColorPrint
 
-# Exemple Usage
-
-# MyURL = SSLSocket(url="https://www.google.fr",port=443)
-# print(MyURL.URL.get_domain())
-# print("TLS 1.0 = ",MyURL.is_tls_enabled(ssl.PROTOCOL_TLSv1))
-# print("TLS 1.1 = ",MyURL.is_tls_enabled(ssl.PROTOCOL_TLSv1_1))
-# print("TLS 1.2 = ",MyURL.is_tls_enabled(ssl.PROTOCOL_TLSv1_2))
-
-# MyURL.Open_Socket()
-# MyURL.Wrap_Socket()
-# print(MyURL.get_ssl_version())
-# MyURL.close_socket()
-
-# Exemple Usage 2
-# MyURL = SSLSocket(url="https://www.google.fr",port=443)
-# print(MyURL.get_tls_state())
-# --> {'result_list': 'False, False, true, true'}
 
 ssl_equiv = (
     ("TLS1.0", ssl.PROTOCOL_TLSv1),
@@ -30,40 +13,46 @@ ssl_equiv = (
     ("TLS1.2", ssl.PROTOCOL_TLSv1_2),
     ("TLS1.3", None))
 
-index_ssl = ["", "", "", "TLS1.0", "TLS1.1", "TLS1.2","TLS1.3"]
 
 
 class Header:
+
+  security_dict = { 'Content-Security-Policy': "[NONE]",
+                    'Strict-Transport-Security': "[NONE]",
+                    'X-Content-Type-Options': "[NONE]",
+                    'X-Frame-Options': "[NONE]"
+                   }
+
+
   def __init__(self):
     """ Constructor """
-
     self.state= False
-    self.data = "No header"
-    self.csp = "[NONE]"
-    self.hsts = "[NONE]"
-    self.x_content = "[NONE]"
-    self.x_frame = "[NONE]"
+    self.data = "[NONE]"
 
 
-  def check_header(self,security):
+  def look_for(self,security):
     """ Check if the website implement security best practices into data"""
-
-    if type(self.data) is list:
-      for el in self.data:
-        if security in el:
-          ColorPrint.green(f"Found {security} in {el}")
-          return el
-
-    return "[NONE]"    
+    search = [ el for el in self.data if security in el ]
+    if len(search) > 0:
+      return search
+    else:
+      return "[NONE]"
 
   
   def analyse(self):
     """ Analyse the header to check for security implementations """
-    self.csp = self.check_header(b"Content-Security-Policy")
-    self.hsts = self.check_header(b"Strict-Transport-Security")
-    self.x_content = self.check_header(b"X-Content-Type-Options")
-    self.x_frame = self.check_header(b"X-Frame-Options")
-    
+    for e in list(self.security_dict.keys()):
+      self.security_dict[e]=self.look_for(e)
+
+
+  def print_result(self):
+    """ Print security search result from header """
+    for e in list(self.security_dict.keys()):
+      if self.security_dict[e]:
+         ColorPrint.green(f"Found {self.security_dict[e]}")
+      else:
+         ColorPrint.red(f"Not Found {self.security_dict[e]}")
+
 
 class MySocket:
 
@@ -76,7 +65,10 @@ class MySocket:
     self.is_opened = False
     self.set_url(url)
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
+    if self.socket:
+      self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) if self.URL.get_ip() else self.check_port()
+    else:
+      self.TLS_PORT_OPENED = False
 
   def get_url(self):
     """ Getter for the URL """
@@ -92,7 +84,7 @@ class MySocket:
     if not isinstance(url, URL):
       raise ValueError("Provided url must be an instance of the URL class !")
       
-    self.URL = url
+    self.URL = url 
       
 
   def check_port(self, port=443):
@@ -154,7 +146,7 @@ class SSLSocket(MySocket):
     version = ""
     if self.ssl_certificate.state:
       version = self.wrapped_socket.version()
-    
+
     else:
       ColorPrint.red(f"In {__class__.__name__} :no SSL can be retrieved")
 
@@ -185,12 +177,11 @@ class SSLSocket(MySocket):
 
   def get_header(self):
     if self.ssl_certificate.state:
-      str_Data = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
-      str_Encoded = str.encode(str_Data)
-      self.wrapped_socket.sendall(str_Encoded)
-      self.header.data = self.wrapped_socket.recv(1024).split(b"\r\n")
+      request = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
+      self.wrapped_socket.sendall(request.encode())
+      str_data = self.wrapped_socket.recv(1024).decode()
+      self.header.data= str_data.split("\r\n")
       self.header.state = True
-
     else:
        ColorPrint.red(f"In {__class__.__name__} : ERROR Socket is Not Wrapped: No header can be retrieved")
     
@@ -200,83 +191,78 @@ class SSLSocket(MySocket):
   def wrap_ssl_socket(self, tls_version=None):
     """ Wrap the socket """
     self.ssl_certificate.state = False
-    if self.ssl_certificate.state:
-      print(
-          f"In {__class__.__name__} : Wrap_ssl_socket is trying to wrap a socket already wrapped")
-    else:
-      # Setting ssl context based on specified tls version
-      try:
-        self.ssl_context = ssl.create_default_context()
+    # Setting ssl context based on specified tls version
+    try:
+      self.ssl_context = ssl.create_default_context()
 
-        if tls_version != None:
-          self.ssl_context = ssl.SSLContext(tls_version or ssl.PROTOCOL_SSLv23)
+      if tls_version != None:
+        self.ssl_context = ssl.SSLContext(tls_version or ssl.PROTOCOL_SSLv23)
+    except Exception as e:
+      ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
+      return False
 
-      except Exception as e:
-        ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
-        return False
+    # Wrapping the socket
+    try:
+      self.wrapped_socket = self.ssl_context.wrap_socket(
+          self.get_socket(), server_hostname=self.URL.get_domain())
+      self.ssl_certificate.state = True
 
-      # Wrapping the socket
-      try:
-        self.wrapped_socket = self.ssl_context.wrap_socket(
-            self.get_socket(), server_hostname=self.URL.get_domain())
-        self.ssl_certificate.state = True
+    except ssl.SSLCertVerificationError as err:
+      self.ssl_certificate.reason = err.reason
+      self.ssl_certificate.code = err.verify_code
+      self.ssl_certificate.message = err.verify_message
 
-      except ssl.SSLCertVerificationError as err:
-        self.ssl_certificate.reason = err.reason
-        self.ssl_certificate.code = err.verify_code
-        self.ssl_certificate.message = err.verify_message
+      ColorPrint.yellow(
+          f"In {__class__.__name__} : Certificate error {err.reason} : {err.verify_code} : {err.verify_message}")
 
-        ColorPrint.yellow(
-            f"In {__class__.__name__} : Certificate error {err.reason} : {err.verify_code} : {err.verify_message}")
-
-      except Exception as err:
-        self.ssl_certificate.state = False
-#        ColorPrint.yellow(
-#            f"In {__class__.__name__} : Wrap error ici {index_ssl[tls_version]}: {err}")
+    except Exception as err:
+      self.ssl_certificate.state = False
+#      ColorPrint.yellow(f"In {__class__.__name__} : Wrap error : {err}")
 
     return self.ssl_certificate.state
 
-  # *******************************************************
-  # def is_tls_enabled(self,tls_version)
-  #   where tls_version can be:
-  #       ssl.PROTOCOL_TLSv1
-  #       ssl.PROTOCOL_TLSv1_1
-  #       ssl.PROTOCOL_TLSv1_2
-  #       none for maximum value available (test for TLS1.3)
-  # *******************************************************
-
-  def is_tls_enabled(self, tls_to_test):
-    """ Checks if TLS protocol is enabled """
-    return self.wrap_ssl_socket(tls_version=tls_to_test)
 
   def get_tls_state(self):
     """Check evry specified TLS version State"""
-
     res = {}
-
     # Check each version
     for version in ssl_equiv:
-      self.open_socket()
-      self.ssl_certificate.state = False
-
-      version_name, version_protocol = version
       value = False
+      self.open_socket()
+      version_name, version_protocol = version
 
       try:
-        response = self.is_tls_enabled(version_protocol)
-
+        response = self.wrap_ssl_socket(version_protocol)
         if response:
-          if not (version_name == "TLSv1.3" and response != "TLSv1.3"):
-            ColorPrint.green(f"{self.URL.get_domain()} supports {self.get_ssl_version()} ")
+          ssl_version = self.get_ssl_version()
+          if (version_name == "TLS1.3" and ssl_version == "TLSv1.3"):
             value = True
+          else:
+            if (version_name == "TLS1.2" and ssl_version == "TLSv1.2"):
+              value = True
+            else:
+              if (version_name == "TLS1.1" and ssl_version == "TLSv1.1"):
+                value = True
+              else: 
+                if(ssl_version == "TLSv1.0"):
+                  value = True
+                else:
+                  value = False
+        if value:
+          ColorPrint.green(f"{self.URL.get_domain()} {version_name} is supported")
+        else:
+          ColorPrint.red(f"{self.URL.get_domain()} {version_name} is not supported")
 
       except Exception as err:
-        ColorPrint.yellow(f"{err}: cannot retrieve data for {version}")
-
-      if not value:
-        ColorPrint.red(f"{self.URL.get_domain()} does not supports {version_name}")
-
+        ColorPrint.yellow(f"{err}:{self.URL.get_domain()} {version_name} is not defined")
+        
+        
       res[version_name] = value
       self.close_socket()
 
     return res
+  
+
+  
+
+
