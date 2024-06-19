@@ -10,8 +10,7 @@ from wepwawet.utils.color_print import ColorPrint
 ssl_equiv = (
     ("TLS1.0", ssl.PROTOCOL_TLSv1),
     ("TLS1.1", ssl.PROTOCOL_TLSv1_1),
-    ("TLS1.2", ssl.PROTOCOL_TLSv1_2),
-    ("TLS1.3", None))
+    ("TLS1.2", ssl.PROTOCOL_TLSv1_2))
 
 
 
@@ -226,41 +225,37 @@ class SSLSocket(MySocket):
 
   def get_tls_state(self):
     """Check evry specified TLS version State"""
-    res = {}
+    res = {
+      "TLS1.0" : "",
+      "TLS1.1" : "",
+      "TLS1.2" : ""
+    }
     # Check each version
     for version in ssl_equiv:
       value = False
-      self.open_socket()
-      version_name, version_protocol = version
+      if (self.open_socket() != -1):
+        version_name, version_protocol = version
 
-      try:
-        response = self.wrap_ssl_socket(version_protocol)
-        if response:
-          ssl_version = self.get_ssl_version()
-          if (version_name == "TLS1.3" and ssl_version == "TLSv1.3"):
-            value = True
-          else:
-            if (version_name == "TLS1.2" and ssl_version == "TLSv1.2"):
-              value = True
+        try:
+          response = self.wrap_ssl_socket(version_protocol)
+          if response:
+            ssl_version = self.get_ssl_version()
+            value = ((version_name == "TLS1.2" and ssl_version == "TLSv1.2") 
+              or (version_name == "TLS1.1" and ssl_version == "TLSv1.1")  
+              or (version_name == "TLS1.0" and ssl_version == "TLSv1.0"))
+            
+            if value:
+              ColorPrint.green(f"{self.URL.get_domain()} {version_name} is supported")
             else:
-              if (version_name == "TLS1.1" and ssl_version == "TLSv1.1"):
-                value = True
-              else: 
-                if(ssl_version == "TLSv1.0"):
-                  value = True
-                else:
-                  value = False
-        if value:
-          ColorPrint.green(f"{self.URL.get_domain()} {version_name} is supported")
-        else:
-          ColorPrint.red(f"{self.URL.get_domain()} {version_name} is not supported")
+              ColorPrint.red(f"{self.URL.get_domain()} {version_name} is not supported")
+          else: 
+              ColorPrint.red(f"{self.URL.get_domain()} {version_name} is not supported, serveur does not  reply")
 
-      except Exception as err:
-        ColorPrint.yellow(f"{err}:{self.URL.get_domain()} {version_name} is not defined")
-        
-        
-      res[version_name] = value
-      self.close_socket()
+        except Exception as err:
+          ColorPrint.yellow(f"{err}:{self.URL.get_domain()} {version_name} is not defined")
+
+        res[version_name] = value
+        self.close_socket()
 
     return res
   

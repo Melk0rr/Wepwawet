@@ -1,10 +1,21 @@
 from wepwawet.network.ssl_socket import SSLSocket
+from wepwawet.network.ssl_socket import Header
 from wepwawet.utils.color_print import ColorPrint
 
 
 def check_header(target):
   """ Main Header function : Retrieve Header """
-  response = {}
+  response = {
+          "Cert State":  "",
+          "Cert code": "",
+          "Cert reason": "",
+          "Cert message": "",
+          "Cert validity": "",
+          "Cert CN": "",
+          "Cert O": "",
+          "Certificate": "",
+          "Header": ""
+  }
 
   if target.get_ip():
     print(f"{target.get_domain()}: checking header with best SSL connection available", end="...")
@@ -49,12 +60,13 @@ def check_header(target):
         "Header": local_ssl_socket.header.data
     }
     # add header CSP values 
-    response.update(local_ssl_socket.header.security_dict.items())
-
 
     local_ssl_socket.close_socket()
 
   else:
     print(f"{target.get_domain()}: IP not resolved. Skipping...")
 
+  # add header CSP value
+  response.update(Header.security_dict.items())
+  
   return response
