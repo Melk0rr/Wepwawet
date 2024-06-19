@@ -4,7 +4,11 @@ from wepwawet.utils.color_print import ColorPrint
 
 def check_tls(target):
   """ Main TLS function : Check TLS """
-  tls_response = {}
+  tls_response = {
+      "TLS1.0" : "",
+      "TLS1.1" : "",
+      "TLS1.2" : "",
+    }
 
   if target.get_ip():
     print(f"Cheking TLS for {target.get_domain()}")
