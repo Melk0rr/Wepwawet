@@ -165,7 +165,7 @@ class IPv4(IPv4Base):
       self.ports.append(port)
 
     else:
-      print(f"This port is already in the list of open ports")
+      print(f"{port} is already in the list of open ports")
 
   def remove_port(self, port: int):
     """ Remove the port from the list of open ports """
@@ -176,7 +176,7 @@ class IPv4(IPv4Base):
   def is_in_subnet(self, net_addr: str) -> bool:
     """ Checks if the current ip is in the provided subnet """
     if "/" not in net_addr:
-      raise ValueError(f"Invalid net address provided ! Please include a net mask as CIDR notation")
+      raise ValueError(f"Invalid net address provided: {net_addr} ! Please include a net mask as CIDR notation")
 
     net = IPv4(net_addr)
     mask = net.get_mask().to_int()
