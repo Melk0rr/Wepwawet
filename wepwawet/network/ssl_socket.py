@@ -218,7 +218,7 @@ class SSLSocket(MySocket):
 
     except Exception as err:
       self.ssl_certificate.state = False
-#      ColorPrint.yellow(f"In {__class__.__name__} : Wrap error : {err}")
+      ColorPrint.yellow(f"In {__class__.__name__} : Wrap error : {err}")
 
     return self.ssl_certificate.state
 
