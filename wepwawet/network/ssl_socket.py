@@ -199,7 +199,7 @@ class SSLSocket(MySocket):
       if tls_version != None:
         self.ssl_context = ssl.SSLContext(tls_version or ssl.PROTOCOL_SSLv23)
     except Exception as e:
-      ColorPrint.red(f"In {__class__.__name__} : {type(err).__name__} {e}")
+      ColorPrint.red(f"In {__class__.__name__} : {type(e).__name__} {e}")
       return False
 
     # Wrapping the socket
