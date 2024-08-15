@@ -81,7 +81,7 @@ class IPv4Mask(IPv4Base):
 
   @staticmethod
   def get_valid_mask():
-    return [ self.get_netmask(x) for x in range(1, 33) ]
+    return [ IPv4Mask.get_netmask(x) for x in range(1, 33) ]
 
   @staticmethod
   def get_netmask(network_length: int) -> str:
