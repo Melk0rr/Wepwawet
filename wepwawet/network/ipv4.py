@@ -73,7 +73,7 @@ class IPv4Mask(IPv4Base):
   @staticmethod
   def get_netcidr(mask: str) -> int:
     """ Static method to return CIDR notation for a given mask """
-    if mask not in self.get_valid_mask():
+    if mask not in IPv4Mask.get_valid_mask():
       raise ValueError(f"Invalid mask provided")
 
     base = IPv4Base(mask)
