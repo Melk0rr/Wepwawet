@@ -73,7 +73,7 @@ def main():
 
     print(banner)
 
-    command = wepwawet.commands.Target(options)
+    command = wepwawet.commands.target.Target(options)
     command.run()
 
     print(
