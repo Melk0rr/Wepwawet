@@ -2,8 +2,6 @@
 from typing import List
 
 from .port import Port
-from wepwawet.utils.color_print import ColorPrint
-
 
 class IPv4Base:
 
