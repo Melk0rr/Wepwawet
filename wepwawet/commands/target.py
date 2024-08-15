@@ -1,6 +1,5 @@
 """ Target module handling targeting operations and data gathering """
 import csv
-from time import sleep
 from multiprocessing import Pool
 
 from wepwawet.scanners.geoloc import geoloc
@@ -10,7 +9,6 @@ from wepwawet.scanners.ping import ping
 from wepwawet.scanners.shodan import ask_shodan
 from wepwawet.scanners.tls import check_tls
 from wepwawet.network.url import URL
-from wepwawet.network.ipv4 import IPv4
 from wepwawet.scanners.nmap import nmap
 from wepwawet.scanners.whois import whois
 from wepwawet.utils.color_print import ColorPrint
