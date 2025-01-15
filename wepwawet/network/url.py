@@ -1,11 +1,12 @@
 """ URL module adressing url object behaviour """
 import re
 import socket
+
 from typing import List, Dict
 from urllib.parse import urlparse, urlsplit
 
 from wepwawet.network.ipv4 import IPv4
-from wepwawet.utils.color_print import ColorPrint
+from wepwawet.utils import ColorPrint
 
 
 class URL:
@@ -22,8 +23,8 @@ class URL:
 
     self.host = url
     self.netloc = urlsplit(self.host).netloc
-    self.ip = None
-    self.related_domains = []
+    self.ip: IPv4 = None
+    self.related_domains: List[str] = []
     self.geo_location = {
         "city": "",
         "country": ""
@@ -48,10 +49,10 @@ class URL:
     separator = ", " if city and country else ""
     return f"{city}{separator}{country}"
 
-  def get_ip_address(self) -> str:
+  def get_ip_str(self) -> str:
     """ Returns current ip address string """
     if self.ip:
-      return self.ip.get_address()
+      return str(self.ip)
 
   def set_ip(self, ip: IPv4):
     """ Setter for url ip address """
@@ -94,7 +95,7 @@ class URL:
       if ip:
         self.ip = IPv4(ip)
 
-      ColorPrint.green(f"{self.netloc}: {self.ip.get_address()}")
+      ColorPrint.green(f"{self.netloc}: {self.ip}")
 
     except Exception as e:
       ColorPrint.red(f"{self.netloc}: could not resolve IP address > {e}")
@@ -106,7 +107,7 @@ class URL:
     formated_ports_str = ', '.join(f"{x}" for x in self.ip.get_port_strings()) if self.ip else ""
     return {
         "host": self.netloc,
-        "ip": self.get_ip_address(),
+        "ip": self.get_ip_str(),
         **self.geo_location,
         "domains": ', '.join(f"{x}" for x in self.related_domains),
         "ports": formated_ports,
