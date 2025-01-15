@@ -90,7 +90,7 @@ class MySocket:
     """ Check whether or not the given port is open on the URL """
     check = False
     if self.URL.get_ip():
-      check = self.socket.connect_ex((self.URL.get_ip_address(), port)) == 0
+      check = self.socket.connect_ex((self.URL.get_ip_str(), port)) == 0
       if check:
         self.URL.get_ip().append_open_port(Port(port_number=port))
 

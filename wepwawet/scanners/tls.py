@@ -1,5 +1,5 @@
 from wepwawet.network.ssl_socket import SSLSocket
-from wepwawet.utils.color_print import ColorPrint
+from wepwawet.utils import ColorPrint
 
 
 def check_tls(target):

@@ -12,7 +12,7 @@ def ping(self, target):
   """ Run ping command on the provided host """
   response = 1
 
-  host_ip = target.get_ip_address()
+  host_ip = target.get_ip_str()
 
   if host_ip:
     print(f"{target.get_domain()}, pinging", end="...")

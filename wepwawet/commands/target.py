@@ -1,18 +1,13 @@
 """ Target module handling targeting operations and data gathering """
 import csv
+
+from typing import List, Dict
 from multiprocessing import Pool
 
-from wepwawet.scanners.geoloc import geoloc
-from wepwawet.scanners.header import check_header
-from wepwawet.scanners.http import http_info
-from wepwawet.scanners.ping import ping
-from wepwawet.scanners.shodan import ask_shodan
-from wepwawet.scanners.tls import check_tls
-from wepwawet.network.url import URL
-from wepwawet.scanners.nmap import nmap
-from wepwawet.scanners.whois import whois
-from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.init_option_handle import str_file_option_handle
+from wepwawet.utils import ColorPrint, str_file_option_handle
+
+from wepwawet.scanners import geoloc, check_header, http_info, ping, ask_shodan, check_tls, nmap, whois
+from wepwawet.network import URL
 
 from .base import Base
 
@@ -21,12 +16,12 @@ ip_track = {}
 class Target(Base):
   """Main enumeration module"""
   
-  def __init__(self, options):
+  def __init__(self, options: Dict):
     """ Constructor """
     super().__init__(options)
 
     self.results = []
-    self.unique_targets = []
+    self.unique_targets: List[URL] = []
 
     str_file_option_handle(self, "TARGET", "FILE")
     self.unique_targets = list(set(self.options["TARGET"]))
@@ -39,7 +34,7 @@ class Target(Base):
       for url in pool.map(self.init_url, self.unique_targets):
         unique_urls.append(url)
 
-    self.unique_targets = unique_urls
+    self.unique_targets: List[URL] = unique_urls
 
   def init_url(self, target):
     """ Init url instance based on target index and resolve ip address """
@@ -73,10 +68,10 @@ class Target(Base):
     except Exception as e:
       ColorPrint.red(f"{__class__.__name__} : {e} cannot save to CSV")
 
-  def url_process(self, target):
+  def url_process(self, target: URL):
     """ Target process to deal with url data """
     options_res = {}
-    target_ip = target.get_ip_address()
+    target_ip = target.get_ip_str()
     # If option is provided run ping on the target
     if self.options["--ping"]:
       respond = ping(self, target)
@@ -99,7 +94,7 @@ class Target(Base):
       # Check if the ip was already scanned (some url may share same ip)
       if not target_ip in ip_track:
         nmap(self, target)
-        ip_track[target_ip] = target.get_ip_address()
+        ip_track[target_ip] = target.get_ip_str()
 
       else:
         print(f"{target.get_domain()} IP was already scanned. Skipping...")
