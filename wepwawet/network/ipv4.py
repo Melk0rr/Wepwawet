@@ -1,74 +1,187 @@
-""" IPv4 module """
-from typing import List
+import re
+import socket
 
-from .port import Port
+from enum import Enum
+from typing import List, Union
 
-class IPv4Base:
+from wepwawet.utils import ColorPrint, count_1_bits, i_not, i_and
 
-  def __init__(self, addr: str):
+from . import Port
+
+def ip_str_to_int(ip: str) -> int:
+  """ Converts an ip address string into an int """
+  return int(''.join([bin(int(x)+256)[3:] for x in ip.split('.')]), 2)
+
+def ip_int_to_str(ip: int) -> str:
+  """ Converts an ip address integer into a string """
+  return '.'.join([str((ip >> i) & 0xff) for i in (24, 16, 8, 0)])
+
+def cidr_to_int(cidr: int) -> int:
+  """ Returns a mask integer value based on the given network length """
+  return (0xffffffff << (32 - cidr)) & 0xffffffff
+
+class IPVersion(Enum):
+  IPV4 = {
+    "pattern": r'^(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$'
+  }
+  IPV6 = {
+    "pattern": r'^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'
+  }
+
+
+class IPv4:
+  """ Simple Class providing tools to manipulate IPv4 addresses """
+
+  # ****************************************************************
+  # Attributes & Constructors
+
+  def __init__(self, address: Union[int, str]):
     """ Constructor """
+    
+    if type(address) is int:
+      address = ip_int_to_str(address)
 
-    addr_split = addr.split('.')
-    if len(addr_split) != 4:
-      raise ValueError(f"Invalid IP address provided: {addr}")
+    if re.match(IPVersion.IPV4.value["pattern"], address):
+      self.version = IPVersion.IPV4
+    
+    elif re.match(IPVersion.IPV6.value["pattern"], address):
+      self.version = IPVersion.IPV6
+    
+    else:
+      raise ValueError(f"Invalid IPv4 address provided: {address}")
 
-    self.address: str = addr  
-    self.bytes: List[bytes] = [ (int(x)).to_bytes(1, byteorder="little") for x in addr_split ]
+    self.address: int = ip_str_to_int(address)
 
-  def get_address(self) -> str:
+    self.ports = {}
+
+  # ****************************************************************
+  # Methods
+
+  def get_address(self) -> int:
     """ Getter for ip string address """
     return self.address
 
-  def get_bytes(self) -> List[bytes]:
-    """ Getter for ip byte array """
-    return self.bytes
+  def get_port_numbers(self) -> List[int]:
+    """ Getter for the Port numbers """
+    return self.ports.keys()
 
-  def to_hex_array(self) -> List[hex]:
-    """ Returns the current ip as hex array """
-    return [ x.hex() for x in self.bytes ]
+  def get_port_strings(self) -> List[int]:
+    """ Getter for the Port strings """
+    return [ str(p) for p in self.ports.values() ]
 
-  def to_hex_str(self) -> str:
-    """ Returns the current ip as hex string """
-    return ''.join(self.to_hex_array())
+  def set_open_ports(self, ports: Union[List[int], List[Port]]):
+    """ Set the open ports """
 
-  def to_binary_array(self) -> List[bin]:
-    """ Returns the current ip as a binary table """
-    return [ bin(int(x, base=16))[2:] for x in self.to_hex_array() ]
+    # Clear the list of open ports
+    self.ports = {}
 
-  def to_int(self) -> int:
-    """ Returns the current ip as an integer """
-    return int(self.to_hex_str(), 16)
+    for p in ports:
+      self.append_open_port(p)
+
+  def is_port_in_list(self, port: Union[int, Port]) -> bool:
+    """ Check if the given port is in the list of ports """
+
+    port_number = port
+
+    if isinstance(port, Port):
+      port_number = port.get_number()
+
+    return port_number in self.ports.keys()
+
+  def append_open_port(self, port: Union[int, Port], force: bool = False):
+    """ Append the port to the list of open ports """
+    is_port = isinstance(port, Port)
+    is_number = isinstance(port, int)
+
+    if not (is_port or is_number):
+      raise ValueError(
+          "Provided port must be an instance of class Port or an integer")
+
+    if is_number:
+      port = Port(port_number=port)
+
+    if not self.is_port_in_list(port) or force:
+      self.ports[port.get_number()] = port
+
+    else:
+      print(f"{port} is already in the list of open ports")
+
+  def remove_port(self, port: int):
+    """ Remove the port from the list of open ports """
+
+    del self.ports[port]
+
+  def is_in_subnet(self, net: "Subnet") -> bool:
+    """ Checks if the current ip is in the provided subnet """
+
+    return i_and(int(self), int(net.get_mask())) == i_and(int(net.get_address()), int(net.get_mask()))
+
+  def __int__(self) -> int:
+    """ Converts the current ip base into an integer """
+    return self.address
+
+  def __str__(self) -> str:
+    """ Converts the current ip base into a string """
+    return ip_int_to_str(self.address)
+
+  @staticmethod
+  def resolve_from_hostname(hostname: str) -> str:
+    """ Resolves the IP address for the current URL """
+    ip = None
+    try:
+      ip = socket.gethostbyname(hostname)
+
+    except Exception as e:
+      ColorPrint.red(f"{hostname}: could not resolve IP address\n{e}")
+
+    return ip
 
 
-class IPv4Mask(IPv4Base):
+class IPv4Mask(IPv4):
   """ Simple Class providing tools to manipulate IPv4 mask """
 
-  def __init__(self, mask: int | str):
+  # ****************************************************************
+  # Attributes & Constructors
+
+  def __init__(self, mask: Union[int, str] = None, cidr: int = None):
     """ Constructor """
 
-    if type(mask) is str:
-      super().__init__(mask)
-      cidr = ''.join(self.to_binary_array()).count('1')
-      
-    elif type(mask) is int:
-      if not 1 < mask < 33:
+    if mask is None and cidr is None:
+      raise ValueError("Please provide either a CIDR mask or a mask value as integer or string")
+
+    if cidr is not None:
+      if not 1 < cidr < 33:
         raise ValueError("Mask CIDR value must be between 1 and 32!")
 
-      cidr = mask
-      super().__init__(self.get_netmask(cidr))
-      
-    else:
+      mask = cidr_to_int(cidr)
+
+    if type(mask) is not int and type(mask) is not str:
       raise ValueError(f"Invalid mask provided : {mask}. You must provide a string or an integer !")
 
-    self.cidr = cidr
+    super().__init__(mask)
+    self.cidr = count_1_bits(self.address)
+
+  # ****************************************************************
+  # Methods
 
   def get_cidr(self) -> int:
     """ Getter for mask CIDR """
     return self.cidr
 
-  def to_int(self) -> int:
+  def cidr_to_int(self) -> int:
     """ Returns the current mask as an integer """
-    return (0xffffffff << (32 - self.cidr)) & 0xffffffff
+    return cidr_to_int(self.cidr)
+
+  def get_wildcard(self) -> IPv4:
+    """ Returns mask wildcard """
+    return IPv4(i_not(self.address))
+  
+  def __str__(self, as_cidr: bool = False) -> str:
+    """ Converts the current instance into a string """
+    if as_cidr:
+      return f"{self.cidr}"
+    
+    return super().__str__()
 
   @staticmethod
   def get_netcidr(mask: str) -> int:
@@ -76,7 +189,7 @@ class IPv4Mask(IPv4Base):
     if mask not in IPv4Mask.get_valid_mask():
       raise ValueError(f"Invalid mask provided: {mask}")
 
-    base = IPv4Base(mask)
+    base = IPv4(mask)
     return ''.join(base.to_binary_array()).count('1')
 
   @staticmethod
@@ -92,101 +205,5 @@ class IPv4Mask(IPv4Base):
     if not 0 < network_length < 33:
       raise ValueError("Network length value must be between 1 and 32!")
     
-    mask = (0xffffffff >> (32 - network_length)) << (32 - network_length)
-    return (str( (0xff000000 & mask) >> 24) + '.' +
-            str( (0x00ff0000 & mask) >> 16) + '.' +
-            str( (0x0000ff00 & mask) >> 8)  + '.' +
-            str( (0x000000ff & mask)))
+    return ip_int_to_str(cidr_to_int(network_length))
 
-
-class IPv4(IPv4Base):
-  """ Simple Class providing tools to manipulate IPv4 addresses """
-
-  def __init__(self, address: str, mask: str = None):
-    """ Constructor """
-    
-    net = mask
-    if "/" in address:
-      address, net = address.split("/")
-
-    super().__init__(address)
-
-    if net:
-      self.mask = IPv4Mask(int(net))
-
-    self.ports = []
-
-  def get_mask(self) -> IPv4Mask:
-    """ Getter for ip mask instance """
-    return self.mask
-
-  def get_port_numbers(self) -> List[int]:
-    """ Getter for the Port numbers """
-    return [p.get_number() for p in self.ports]
-
-  def get_port_strings(self) -> List[int]:
-    """ Getter for the Port strings """
-    return [p.to_string() for p in self.ports]
-
-  def set_mask(self, mask: int | str):
-    """ Setter for ip mask """
-    self.mask = IPv4Mask(mask)
-
-  def set_open_ports(self, ports: List[int] | List[Port]):
-    """ Set the open ports """
-    # Clear the list of open ports
-    self.ports.clear()
-
-    for p in ports:
-      self.append_open_port(p)
-
-  def is_port_in_list(self, port: int | Port) -> bool:
-    """ Check if the given port is in the list of ports """
-    port_number = port
-
-    if isinstance(port, Port):
-      port_number = port.get_number()
-
-    return port_number in self.get_port_numbers()
-
-  def append_open_port(self, port: int | Port):
-    """ Append the port to the list of open ports """
-    is_port = isinstance(port, Port)
-    is_number = isinstance(port, int)
-
-    if not (is_port or is_number):
-      raise ValueError(
-          "Provided port must be an instance of class Port or an integer")
-
-    if not self.is_port_in_list(port):
-      if is_number:
-        port = Port(port_number=port)
-
-      self.ports.append(port)
-
-    else:
-      print(f"{port} is already in the list of open ports")
-
-  def remove_port(self, port: int):
-    """ Remove the port from the list of open ports """
-    index = self.get_port_numbers().index(port)
-
-    del self.ports[index]
-
-  def is_in_subnet(self, net_addr: str) -> bool:
-    """ Checks if the current ip is in the provided subnet """
-    if "/" not in net_addr:
-      raise ValueError(f"Invalid net address provided: {net_addr} ! Please include a net mask as CIDR notation")
-
-    net = IPv4(net_addr)
-    mask = net.get_mask().to_int()
-    return (self.to_int() & mask) == (net.to_int() & mask)
-
-  def to_string(self, show_mask: bool = True) -> str:
-    """ Returns the current instance as a string """
-    ip_str = self.address
-
-    if self.mask and show_mask:
-      ip_str += f"/{self.mask.get_cidr()}"
-
-    return ip_str
