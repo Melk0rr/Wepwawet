@@ -1,6 +1,5 @@
 """ Dictionary utils """
 
-
 def join_dictionary_items(dictionary, char):
   """ Join dictionary items with the provided character """
   return char.join(f"{k}: {v}" for k, v in dictionary.items())
