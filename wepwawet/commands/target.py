@@ -20,7 +20,7 @@ class Target(Base):
     """ Constructor """
     super().__init__(options)
 
-    self.results = []
+    self.results: List[Dict] = []
     self.unique_targets: List[URL] = []
 
     str_file_option_handle(self, "TARGET", "FILE")
@@ -36,14 +36,14 @@ class Target(Base):
 
     self.unique_targets: List[URL] = unique_urls
 
-  def init_url(self, target):
+  def init_url(self, target: str) -> URL:
     """ Init url instance based on target index and resolve ip address """
     url = URL(target)
     url.resolve_ip()
 
     return url
 
-  def handle_exception(self, e, message=""):
+  def handle_exception(self, e, message="") -> None:
     """ Function handling exception for the current class """
     if self.options["--verbose"]:
       print(e)
@@ -51,7 +51,7 @@ class Target(Base):
     if message:
       ColorPrint.red(message)
 
-  def export_csv(self):
+  def export_csv(self) -> None:
     """ Write the results into a CSV file """
     print("\nExporting results to csv...")
 
@@ -68,7 +68,7 @@ class Target(Base):
     except Exception as e:
       ColorPrint.red(f"{__class__.__name__} : {e} cannot save to CSV")
 
-  def url_process(self, target: URL):
+  def url_process(self, target: URL) -> Dict:
     """ Target process to deal with url data """
     options_res = {}
     target_ip = target.get_ip_str()
@@ -116,7 +116,7 @@ class Target(Base):
     }
 
 
-  def run(self):
+  def run(self) -> None:
     print("\nProcessing targets...")
     # Retreive IP of target and run initial configuration
     with Pool(processes=10) as pool:

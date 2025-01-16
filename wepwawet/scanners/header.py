@@ -1,8 +1,10 @@
-from wepwawet.network import SSLSocket, Header, URL
+from typing import Dict
+
+from wepwawet.network import SSLSocket, Header
 from wepwawet.utils import ColorPrint
 
 
-def check_header(target: URL):
+def check_header(target: "URL") -> Dict:
   """ Main Header function : Retrieve Header """
   response = {
     "Cert State":  "",

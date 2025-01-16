@@ -5,7 +5,6 @@ from typing import Dict
 
 from wepwawet.network import Port, URL
 
-
 def set_url_ports(target: URL, shodan_request: Dict) -> None:
   """ Extract product list from ip ports data """
   port_list = shodan_request.get("ports", [])

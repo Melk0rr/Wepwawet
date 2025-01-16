@@ -1,9 +1,10 @@
 """ HTTP plugin used to check basic http infos for a given target """
 import requests
+
+from typing import Dict
 from bs4 import BeautifulSoup
 
-
-def http_info(self, target):
+def http_info(self, target: "URL") -> Dict:
   """ Performs a simple HTTP request to the given target """
 
   http_status = http_title = ""

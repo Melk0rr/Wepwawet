@@ -3,8 +3,7 @@ import requests
 
 from wepwawet.utils.color_print import ColorPrint
 
-
-def geoloc(self, target):
+def geoloc(self, target: "URL") -> None:
   if target.get_ip() is None:
     ColorPrint.red(f"No IP address to geolocate for {target}")
     return

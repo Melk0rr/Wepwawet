@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Tuple, Any
 from wepwawet.utils.color_print import ColorPrint
 
 """
@@ -118,10 +119,9 @@ class Certificate:
   issued_for_cn =""
   issued_for_o =""
 
-        
-  def get_value(self,value,parameter):
+  def get_value(self, value: Tuple, parameter: str) -> Any:
     if type(value[0]) is tuple:
-        return self.get_value(value[0],parameter)
+      return self.get_value(value[0], parameter)
  
     else:
       if value[0] == parameter:
@@ -130,7 +130,7 @@ class Certificate:
       else:
         return -1
 
-  def analyse(self):
+  def analyse(self) -> bool:
     """ Analyse certificate data """
     res = False
     try:

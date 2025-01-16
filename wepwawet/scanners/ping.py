@@ -1,18 +1,18 @@
 """ Simple module to ping a host """
 from subprocess import Popen, PIPE, STDOUT
 
-from wepwawet.utils.color_print import ColorPrint
+from wepwawet.utils import ColorPrint
 
 out_function = {
   0: ColorPrint.green,
   1: ColorPrint.red
 }
 
-def ping(self, target):
+def ping(self, target: "URL") -> bool:
   """ Run ping command on the provided host """
   response = 1
 
-  host_ip = target.get_ip_str()
+  host_ip = str(target.get_ip())
 
   if host_ip:
     print(f"{target.get_domain()}, pinging", end="...")

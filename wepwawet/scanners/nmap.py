@@ -14,7 +14,7 @@ nmap_commands = {
   "ver-detect": nmap.nmap_version_detection
 }
 
-def set_target_ports(target, nmap_res):
+def set_target_ports(target, nmap_res: Dict) -> None:
   """ Set target ports based on nmap result """
 
   nmap_ip_res = nmap_res.get(str(target.get_ip()), {})
@@ -23,7 +23,7 @@ def set_target_ports(target, nmap_res):
     port = Port(int(p["portid"]), product, p.get("state", "opened"))
     target.get_ip().append_open_port(port)
 
-def nmap(self, target: "URL", command: str = "ver-detect"):
+def nmap(self, target: "URL", command: str = "ver-detect") -> Dict:
   """ Perform an nmap scan on the target """
 
   if command not in nmap_commands.keys():

@@ -1,20 +1,18 @@
 import re
 import requests
 
+from typing import List
 from bs4 import BeautifulSoup
 
-from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.dictionary import join_dictionary_items
+from wepwawet.utils import ColorPrint, join_dictionary_items
 
 BASE_URL = "https://who.is/whois/"
 
-
-def is_valid_row(row):
+def is_valid_row(row: str) -> bool:
   """ Checks if a row is valid """
   return re.search(r'%|<|>', row) is None
 
-
-def rows_2_dictionary(rows):
+def rows_2_dictionary(rows: List[str]) -> List[Dict]:
   """ Converts a list of rows into a dictionary """
   res = []
   s_index = -1
@@ -40,8 +38,7 @@ def rows_2_dictionary(rows):
 
   return res
 
-
-def whois(self, target):
+def whois(self, target: URL) -> None:
   """ Parse data from who.is """
 
   url = f"{BASE_URL}{target.get_domain()}"
