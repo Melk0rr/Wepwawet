@@ -1,14 +1,14 @@
 """ Shodan plugin which will interact with Shodan API to retreive ip data """
 import requests
 
-from wepwawet.network.port import Port
+from wepwawet.network import Port, URL
 
 
-def set_url_ports(target, shodan_request):
+def set_url_ports(target: URL, shodan_request):
   """ Extract product list from ip ports data """
   port_list = shodan_request.get("ports", [])
   cpe_list = shodan_request.get("cpes", [])
-
+  
   # For each port json object, build a string with the port number and associated product
   for i in range(len(port_list)):
     cpe = cpe_list[i] if i < len(cpe_list) else "Unknown"
@@ -16,7 +16,7 @@ def set_url_ports(target, shodan_request):
     target.get_ip().append_open_port(port)
 
 
-def ask_shodan(self, target):
+def ask_shodan(self, target: URL):
   """ Main shodan function : Emit request to shodan via API """
 
   print("Asking Shodan.io...")
@@ -27,7 +27,8 @@ def ask_shodan(self, target):
   try:
     # Asking shodan for the specified IP address
     if target.get_ip():
-      shodan_request = requests.get(f"https://internetdb.shodan.io/{target.get_ip().get_address()}").json()
+      shodan_url = f"https://internetdb.shodan.io/{target.get_ip()}"
+      shodan_request = requests.get(shodan_url).json()
 
   except Exception as e:
     error_message = e

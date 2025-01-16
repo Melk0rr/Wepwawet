@@ -9,7 +9,7 @@ def geoloc(self, target):
     ColorPrint.red(f"No IP address to geolocate for {target}")
     return
 
-  req_url = f"http://ipwho.is/{target.get_ip().get_address()}"
+  req_url = f"http://ipwho.is/{target.get_ip()}"
   res = {}
 
   print(f"{target.get_domain()}, geo locating", end="...")

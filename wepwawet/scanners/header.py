@@ -1,20 +1,19 @@
-from wepwawet.network.ssl_socket import SSLSocket
-from wepwawet.network.ssl_socket import Header
-from wepwawet.utils.color_print import ColorPrint
+from wepwawet.network import SSLSocket, Header, URL
+from wepwawet.utils import ColorPrint
 
 
-def check_header(target):
+def check_header(target: URL):
   """ Main Header function : Retrieve Header """
   response = {
-          "Cert State":  "",
-          "Cert code": "",
-          "Cert reason": "",
-          "Cert message": "",
-          "Cert validity": "",
-          "Cert CN": "",
-          "Cert O": "",
-          "Certificate": "",
-          "Header": ""
+    "Cert State":  "",
+    "Cert code": "",
+    "Cert reason": "",
+    "Cert message": "",
+    "Cert validity": "",
+    "Cert CN": "",
+    "Cert O": "",
+    "Certificate": "",
+    "Header": ""
   }
 
   if target.get_ip():
