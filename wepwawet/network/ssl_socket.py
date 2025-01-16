@@ -1,6 +1,7 @@
 import socket
 import ssl
 
+from typing import List, Union, Tuple
 from wepwawet.utils import ColorPrint
 
 from .port import Port
@@ -26,8 +27,7 @@ class Header:
     self.state= False
     self.data = "[NONE]"
 
-
-  def look_for(self, security: str):
+  def look_for(self, security: str) -> Union[str, List[str]]:
     """ Check if the website implement security best practices into data"""
     search = [ el for el in self.data if security in el ]
     if len(search) > 0:
@@ -36,14 +36,12 @@ class Header:
     else:
       return "[NONE]"
 
-  
-  def analyse(self):
+  def analyse(self) -> None:
     """ Analyse the header to check for security implementations """
     for e in list(self.security_dict.keys()):
       self.security_dict[e]=self.look_for(e)
 
-
-  def print_result(self):
+  def print_result(self) -> None:
     """ Print security search result from header """
     for e in list(self.security_dict.keys()):
       if self.security_dict[e]:
@@ -69,16 +67,16 @@ class MySocket:
     if self.URL.get_ip():
       self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
 
-  def get_url(self):
+  def get_url(self) -> URL:
     """ Getter for the URL """
     return self.URL
 
-  def get_socket(self):
+  def get_socket(self) -> socket.socket:
     """ Getter for the socket """
     if self.is_opened:
       return self.socket
 
-  def set_url(self, url: URL):
+  def set_url(self, url: URL) -> None:
     """ Setter for the URL """
     if not isinstance(url, URL):
       raise ValueError("Provided url must be an instance of the URL class !")
@@ -86,7 +84,7 @@ class MySocket:
     self.URL = url 
       
 
-  def check_port(self, port: int = 443):
+  def check_port(self, port: int = 443) -> bool:
     """ Check whether or not the given port is open on the URL """
     check = False
     if self.URL.get_ip():
@@ -96,7 +94,7 @@ class MySocket:
 
     return check
 
-  def open_socket(self):
+  def open_socket(self) -> socket.socket:
     """ Open the socket """
     res = -1
 
@@ -119,7 +117,7 @@ class MySocket:
 
     return res
 
-  def close_socket(self):
+  def close_socket(self) -> None:
     """ Close the socket """
     if self.is_opened:
       self.socket.close()
@@ -131,20 +129,20 @@ class SSLSocket(MySocket):
 
   def __init__(self, url: URL):
     super().__init__(url)
-    self.ssl_context = None
-    self.wrapped_socket = None
-    self.ssl_certificate = Certificate()
-    self.header = Header()
+    self.ssl_context: ssl.SSLContext = None
+    self.wrapped_socket: ssl.SSLSocket = None
+    self.ssl_certificate: Certificate = Certificate()
+    self.header: Header = Header()
 
-  def get_ssl_context(self):
+  def get_ssl_context(self) -> ssl.SSLContext:
     """ Getter for SSL context """
 
     if(self.ssl_context is not None):
       return self.ssl_context
 
-  def get_ssl_version(self):
+  def get_ssl_version(self) -> str:
     """ Returns the SSL version used for the url certificate """
-    version = ""
+    version = None
     if self.ssl_certificate.state:
       version = self.wrapped_socket.version()
 
@@ -153,15 +151,18 @@ class SSLSocket(MySocket):
 
     return version
 
-  def get_ssl_used_cypher(self):
+  def get_ssl_used_cipher(self) -> Tuple[str, str, int]:
     """ Returns the list of used cyphers """
+    cipher = None
     if self.ssl_certificate.state:
-      return self.wrapped_socket.cipher()
+      cipher = self.wrapped_socket.cipher()
     
     else:
       ColorPrint.red(f"In {__class__.__name__} :no cypher can be retrieved")
+      
+    return cipher
 
-  def get_certificate(self):
+  def get_certificate(self) -> None:
     """ Returns the url certificate """
     if self.ssl_certificate.state:
       try:
@@ -174,20 +175,21 @@ class SSLSocket(MySocket):
       ColorPrint.red(
           f"In {__class__.__name__} : No certificate can be retrieved")
 
-  def get_header(self):
+  def get_header(self) -> bool:
     if self.ssl_certificate.state:
       request = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
       self.wrapped_socket.sendall(request.encode())
       str_data = self.wrapped_socket.recv(1024).decode()
       self.header.data= str_data.split("\r\n")
       self.header.state = True
+
     else:
        ColorPrint.red(f"In {__class__.__name__} : ERROR Socket is Not Wrapped: No header can be retrieved")
     
     return self.header.state
 
 
-  def wrap_ssl_socket(self, tls_version: str = None):
+  def wrap_ssl_socket(self, tls_version: str = None) -> bool:
     """ Wrap the socket """
     self.ssl_certificate.state = False
     # Setting ssl context based on specified tls version
@@ -222,13 +224,14 @@ class SSLSocket(MySocket):
     return self.ssl_certificate.state
 
 
-  def get_tls_state(self):
+  def get_tls_state(self) -> Dict:
     """Check evry specified TLS version State"""
     res = {
       "TLS1.0" : "",
       "TLS1.1" : "",
       "TLS1.2" : ""
     }
+
     # Check each version
     for version in ssl_equiv:
       value = False
