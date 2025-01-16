@@ -1,7 +1,7 @@
 import re
 import requests
 
-from typing import List
+from typing import List, Dict
 from bs4 import BeautifulSoup
 
 from wepwawet.utils import ColorPrint, join_dictionary_items
@@ -38,7 +38,7 @@ def rows_2_dictionary(rows: List[str]) -> List[Dict]:
 
   return res
 
-def whois(self, target: URL) -> None:
+def whois(self, target: "URL") -> None:
   """ Parse data from who.is """
 
   url = f"{BASE_URL}{target.get_domain()}"

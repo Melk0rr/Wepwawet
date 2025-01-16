@@ -1,7 +1,7 @@
 import socket
 import ssl
 
-from typing import List, Union, Tuple
+from typing import List, Dict, Union, Tuple
 from wepwawet.utils import ColorPrint
 
 from .port import Port
