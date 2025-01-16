@@ -55,14 +55,14 @@ class Header:
 
 class MySocket:
 
-  def __init__(self, url):
+  def __init__(self, url: URL):
     """ Constructor """
     if not isinstance(url, URL):
       raise ValueError("Provided url must be an instance of the URL class !")
     
-    self.URL = url
     self.is_opened = False
-    self.set_url(url)
+
+    self.URL = url
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     self.TLS_PORT_OPENED = False
@@ -129,7 +129,7 @@ class MySocket:
 
 class SSLSocket(MySocket):
 
-  def __init__(self, url):
+  def __init__(self, url: URL):
     super().__init__(url)
     self.ssl_context = None
     self.wrapped_socket = None
