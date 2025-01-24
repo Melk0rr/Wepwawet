@@ -17,7 +17,7 @@ def ping(self, target: "URL") -> bool:
   if host_ip:
     print(f"{target.get_domain()}, pinging", end="...")
 
-    ping = Popen("ping -w 100 " + host_ip, stderr=STDOUT, stdout=PIPE)
+    ping = Popen(["ping", "-w", "100", host_ip], stderr=STDOUT, stdout=PIPE)
     ping.communicate()
 
     response = ping.returncode
