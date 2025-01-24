@@ -4,12 +4,13 @@ from wepwawet.network.ssl_socket import SSLSocket
 from wepwawet.utils import ColorPrint
 
 
-def check_tls(target: "URL") -> Dict:
+def check_tls(target):
   """ Main TLS function : Check TLS """
   tls_response = {
       "TLS1.0" : "",
       "TLS1.1" : "",
       "TLS1.2" : "",
+      "TLS1.3" : ""
     }
 
   if target.get_ip():

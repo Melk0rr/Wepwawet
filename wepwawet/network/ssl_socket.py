@@ -11,7 +11,8 @@ from .certificate import Certificate
 ssl_equiv = (
     ("TLS1.0", ssl.PROTOCOL_TLSv1),
     ("TLS1.1", ssl.PROTOCOL_TLSv1_1),
-    ("TLS1.2", ssl.PROTOCOL_TLSv1_2))
+    ("TLS1.2", ssl.PROTOCOL_TLSv1_2),
+    ("TLS1.3", ssl.PROTOCOL_TLS))
 
 class Header:
 
@@ -140,56 +141,51 @@ class SSLSocket(MySocket):
     if(self.ssl_context is not None):
       return self.ssl_context
 
+
+  def check_certificate_state(self, error) -> bool:
+    value = False
+    if self.ssl_certificate.state:
+      value =  True
+    else:  
+      ColorPrint.red(f"In {__class__.__name__} : {error}")
+    return value
+
   def get_ssl_version(self) -> str:
     """ Returns the SSL version used for the url certificate """
     version = None
-    if self.ssl_certificate.state:
+    if self.check_certificate_state("no SSL can be retrieved"):
       version = self.wrapped_socket.version()
-
-    else:
-      ColorPrint.red(f"In {__class__.__name__} :no SSL can be retrieved")
 
     return version
 
   def get_ssl_used_cipher(self) -> Tuple[str, str, int]:
     """ Returns the list of used cyphers """
     cipher = None
-    if self.ssl_certificate.state:
+    if self.check_certificate_state("no cypher can be retrieved"):
       cipher = self.wrapped_socket.cipher()
-    
-    else:
-      ColorPrint.red(f"In {__class__.__name__} :no cypher can be retrieved")
-      
     return cipher
 
   def get_certificate(self) -> None:
     """ Returns the url certificate """
-    if self.ssl_certificate.state:
+    if self.check_certificate_state("No certificate can be retrieved"):
       try:
         self.ssl_certificate.data = self.wrapped_socket.getpeercert()
-
       except Exception as err:
         ColorPrint.red(f"In {__class__.__name__} - {err} :getPeerCert error")
 
-    else:
-      ColorPrint.red(
-          f"In {__class__.__name__} : No certificate can be retrieved")
 
   def get_header(self) -> bool:
-    if self.ssl_certificate.state:
+    self.header.state = False
+    if self.check_certificate_state("ERROR Socket is Not Wrapped: No header can be retrieved"):
       request = f"HEAD / HTTP/1.0\r\nHost: {self.URL.get_domain()}\r\n\r\n"
       self.wrapped_socket.sendall(request.encode())
       str_data = self.wrapped_socket.recv(1024).decode()
       self.header.data= str_data.split("\r\n")
       self.header.state = True
-
-    else:
-       ColorPrint.red(f"In {__class__.__name__} : ERROR Socket is Not Wrapped: No header can be retrieved")
-    
     return self.header.state
 
 
-  def wrap_ssl_socket(self, tls_version: str = None) -> bool:
+  def wrap_ssl_socket(self, tls_version=None) -> bool:
     """ Wrap the socket """
     self.ssl_certificate.state = False
     # Setting ssl context based on specified tls version
@@ -219,17 +215,17 @@ class SSLSocket(MySocket):
 
     except Exception as err:
       self.ssl_certificate.state = False
-      ColorPrint.yellow(f"In {__class__.__name__} : Wrap error : {err}")
 
     return self.ssl_certificate.state
 
 
-  def get_tls_state(self) -> Dict:
+  def get_tls_state(self):
     """Check evry specified TLS version State"""
     res = {
       "TLS1.0" : "",
       "TLS1.1" : "",
-      "TLS1.2" : ""
+      "TLS1.2" : "",
+      "TLS1.3" : ""
     }
 
     # Check each version
@@ -242,7 +238,10 @@ class SSLSocket(MySocket):
           response = self.wrap_ssl_socket(version_protocol)
           if response:
             ssl_version = self.get_ssl_version()
-            value = ((version_name == "TLS1.2" and ssl_version == "TLSv1.2") 
+                 
+            value = (
+                 (version_name == "TLS1.3" and ssl_version == "TLSv1.3") 
+              or (version_name == "TLS1.2" and ssl_version == "TLSv1.2") 
               or (version_name == "TLS1.1" and ssl_version == "TLSv1.1")  
               or (version_name == "TLS1.0" and ssl_version == "TLSv1.0"))
             
@@ -257,6 +256,7 @@ class SSLSocket(MySocket):
           ColorPrint.yellow(f"{err}:{self.URL.get_domain()} {version_name} is not defined")
 
         res[version_name] = value
+        self.ssl_certificate.state =False
         self.close_socket()
 
     return res
