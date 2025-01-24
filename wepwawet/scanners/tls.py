@@ -4,7 +4,7 @@ from wepwawet.network.ssl_socket import SSLSocket
 from wepwawet.utils import ColorPrint
 
 
-def check_tls(target):
+def check_tls(target: "URL") -> Dict:
   """ Main TLS function : Check TLS """
   tls_response = {
       "TLS1.0" : "",
