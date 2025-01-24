@@ -35,7 +35,7 @@
 ```
 
 Wepwawet is an url information gathering tool. Wepwawet gathers data from a variety of sources,
-including Shodan, and more to come.
+including Shodan, ping, nmap, http response, and more to come.
 
 ## Getting Started
 
