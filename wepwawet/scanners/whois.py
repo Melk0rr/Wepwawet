@@ -49,7 +49,7 @@ def whois(self, target: "URL") -> None:
 
   except ConnectionError:
     ColorPrint.red(
-        f"Could not connect to whois for domain {target.get_domain()}")
+      f"Could not connect to whois for domain {target.get_domain()}")
 
   try:
     raw_data = soup.find_all("pre")[0].text
