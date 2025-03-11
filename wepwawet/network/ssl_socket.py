@@ -20,7 +20,7 @@ ssl_equiv = (
 
 class Header:
     # ****************************************************************
-    # INFO: Attributes & Constructors
+    # Attributes & Constructors
 
     security_dict = {
         "Content-Security-Policy": "[NONE]",
@@ -35,7 +35,7 @@ class Header:
         self.data = "[NONE]"
 
     # ****************************************************************
-    # INFO: Methods
+    # Methods
 
     def look_for(self, security: str) -> Union[str, List[str]]:
         """Check if the website implement security best practices into data"""
@@ -64,7 +64,7 @@ class Header:
 class MySocket:
 
     # ****************************************************************
-    # INFO: Attributes & Constructor
+    # Attributes & Constructor
     def __init__(self, url: URL) -> None:
         """Constructor"""
         if not isinstance(url, URL):
@@ -80,7 +80,7 @@ class MySocket:
             self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
 
     # ****************************************************************
-    # INFO: Methods
+    # Methods
 
     def get_url(self) -> URL:
         """Getter for the URL"""
@@ -142,7 +142,7 @@ class MySocket:
 class SSLSocket(MySocket):
 
     # ****************************************************************
-    # INFO: Attributes & Constructor
+    # Attributes & Constructor
 
     def __init__(self, url: URL):
         super().__init__(url)
@@ -152,7 +152,7 @@ class SSLSocket(MySocket):
         self.header: Header = Header()
 
     # ****************************************************************
-    # INFO: Methods
+    # Methods
 
     def get_ssl_context(self) -> ssl.SSLContext:
         """Getter for SSL context"""
