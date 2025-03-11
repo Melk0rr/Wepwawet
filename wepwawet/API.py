@@ -1,2 +1,2 @@
-# Shodan API key to use during the requests
+# INFO: This is where you want to declare your API keys
 SHODAN_KEY = ""

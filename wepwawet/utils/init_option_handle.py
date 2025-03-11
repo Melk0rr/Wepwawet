@@ -1,3 +1,5 @@
+# INFO: Helper function to handle argument from string or cmdlet string
+
 import os
 
 
@@ -11,3 +13,4 @@ def str_file_option_handle(self, string_option, file_option):
 
   else:
     self.options[string_option] = list(filter(None, self.options[string_option].split(",")))
+

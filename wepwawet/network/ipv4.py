@@ -1,3 +1,5 @@
+# INFO: Helper class to handle IPv4
+
 import re
 import socket
 from enum import Enum
@@ -9,6 +11,7 @@ from . import Port
 
 if TYPE_CHECKING:
     from .subnet import Subnet
+
 
 def ip_str_to_int(ip: str) -> int:
     """Converts an ip address string into an int"""

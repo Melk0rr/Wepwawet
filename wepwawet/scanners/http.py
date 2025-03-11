@@ -1,3 +1,4 @@
+# INFO: Module to perform basic HTTP check on URL
 from typing import TYPE_CHECKING, Dict
 
 import requests

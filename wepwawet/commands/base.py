@@ -1,5 +1,4 @@
-"""The base command."""
-
+# INFO: The base command
 
 class Base(object):
   """A base command."""
@@ -13,3 +12,4 @@ class Base(object):
     """ Base run method to be implemented by subclasses """
     raise NotImplementedError(
         "run() method must be implemented by the overloading class")
+

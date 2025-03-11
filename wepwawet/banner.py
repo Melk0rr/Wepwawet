@@ -1,3 +1,5 @@
+# INFO: Project banner
+
 banner = """
                                           =
                                      -:  .=.
@@ -30,3 +32,4 @@ banner = """
                          888
                          888
 """
+

@@ -1,3 +1,5 @@
+# INFO: Helper class to handle SSL sockets
+
 import socket
 import ssl
 from typing import List, Tuple, Union
@@ -17,6 +19,9 @@ ssl_equiv = (
 
 
 class Header:
+    # ****************************************************************
+    # INFO: Attributes & Constructors
+
     security_dict = {
         "Content-Security-Policy": "[NONE]",
         "Strict-Transport-Security": "[NONE]",
@@ -28,6 +33,9 @@ class Header:
         """Constructor"""
         self.state = False
         self.data = "[NONE]"
+
+    # ****************************************************************
+    # INFO: Methods
 
     def look_for(self, security: str) -> Union[str, List[str]]:
         """Check if the website implement security best practices into data"""
@@ -54,6 +62,9 @@ class Header:
 
 
 class MySocket:
+
+    # ****************************************************************
+    # INFO: Attributes & Constructor
     def __init__(self, url: URL):
         """Constructor"""
         if not isinstance(url, URL):
@@ -67,6 +78,9 @@ class MySocket:
         self.TLS_PORT_OPENED = False
         if self.URL.get_ip():
             self.TLS_PORT_OPENED = self.URL.get_ip().is_port_in_list(443) or self.check_port()
+
+    # ****************************************************************
+    # INFO: Methods
 
     def get_url(self) -> URL:
         """Getter for the URL"""
@@ -126,12 +140,19 @@ class MySocket:
 
 
 class SSLSocket(MySocket):
+
+    # ****************************************************************
+    # INFO: Attributes & Constructor
+
     def __init__(self, url: URL):
         super().__init__(url)
         self.ssl_context: ssl.SSLContext = None
         self.wrapped_socket: ssl.SSLSocket = None
         self.ssl_certificate: Certificate = Certificate()
         self.header: Header = Header()
+
+    # ****************************************************************
+    # INFO: Methods
 
     def get_ssl_context(self) -> ssl.SSLContext:
         """Getter for SSL context"""
@@ -183,7 +204,8 @@ class SSLSocket(MySocket):
     def wrap_ssl_socket(self, tls_version=None) -> bool:
         """Wrap the socket"""
         self.ssl_certificate.state = False
-        # Setting ssl context based on specified tls version
+
+        # NOTE: Setting ssl context based on specified tls version
         try:
             self.ssl_context = ssl.create_default_context()
 
@@ -194,7 +216,7 @@ class SSLSocket(MySocket):
             ColorPrint.red(f"In {__class__.__name__} : {type(e).__name__} {e}")
             return False
 
-        # Wrapping the socket
+        # NOTE: Wrapping the socket
         try:
             self.wrapped_socket = self.ssl_context.wrap_socket(
                 self.get_socket(), server_hostname=self.URL.get_domain()
@@ -219,7 +241,7 @@ class SSLSocket(MySocket):
         """Check evry specified TLS version State"""
         res = {"TLS1.0": "", "TLS1.1": "", "TLS1.2": "", "TLS1.3": ""}
 
-        # Check each version
+        # INFO: Check each version
         for version in ssl_equiv:
             value = False
             if self.open_socket() != -1:

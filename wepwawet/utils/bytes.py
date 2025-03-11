@@ -1,4 +1,4 @@
-from typing import List
+# INFO: Some helper functions to handle bit operations
 
 def i_not(val: int) -> int:
   """ Byte NOT """

@@ -1,3 +1,5 @@
+# INFO: Entry point
+
 """
 Usage:
   wepwawet (-t TARGET | -f FILE) [options]
@@ -30,6 +32,7 @@ Help:
   For help using this tool, please open an issue on the Github repository:
   https://github.com/Melk0rr/Wepwawet
 """
+
 import sys
 import time
 
@@ -45,43 +48,43 @@ from . import __version__ as VERSION
 
 
 def main():
-  """ Main program function """
-  try:
-    if sys.version_info < (3, 0):
-      sys.stdout.write("Sorry, requires Python 3.x\n")
-      sys.exit(1)
+    """Main program function"""
+    try:
+        if sys.version_info < (3, 0):
+            sys.stdout.write("Sorry, requires Python 3.x\n")
+            sys.exit(1)
 
-    start_time = time.time()
+        start_time = time.time()
 
-    # Pass doc to docopt
-    options = docopt(__doc__, version=VERSION)
+        # Pass doc to docopt
+        options = docopt(__doc__, version=VERSION)
 
-    if options["--output"] or options["--silent"]:
-      sys.stdout = StdOutHook(options["--output"], options["--silent"],
-                              options["--output"])
+        if options["--output"] or options["--silent"]:
+            sys.stdout = StdOutHook(options["--output"], options["--silent"], options["--output"])
 
-    # Check if at least target or file is provided
-    if not options["--target"] and not options["--file"]:
-      ColorPrint.red(
-          "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required")
-      return
+        # Check if at least target or file is provided
+        if not options["--target"] and not options["--file"]:
+            ColorPrint.red(
+                "Target required! Run with -h for usage instructions. Either -t target.host or -f file.txt required"
+            )
+            return
 
-    if options["--target"] and options["--file"]:
-      ColorPrint.red(
-          "Please only supply one target method - either read by file with -f or as an argument to -t.")
-      return
+        if options["--target"] and options["--file"]:
+            ColorPrint.red(
+                "Please only supply one target method - either read by file with -f or as an argument to -t."
+            )
+            return
 
-    print(banner)
+        print(banner)
 
-    command = wepwawet.commands.target.Target(options)
-    command.run()
+        command = wepwawet.commands.target.Target(options)
+        command.run()
 
-    print(
-        f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
+        print(f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
 
-    if options["--output"]:
-      sys.stdout.write_out()
+        if options["--output"]:
+            sys.stdout.write_out()
 
-  except KeyboardInterrupt:
-    print("\nQuitting...")
-    sys.exit(0)
+    except KeyboardInterrupt:
+        print("\nQuitting...")
+        sys.exit(0)

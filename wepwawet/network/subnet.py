@@ -1,15 +1,16 @@
+# INFO: Helper class to handle subnets
 from typing import Dict, List, Union
 
 from oudjat.utils import i_and, i_or
 
-from . import IPv4, IPv4Mask, ip_int_to_str
+from .ipv4 import IPv4, IPv4Mask, ip_int_to_str
 
 
 class Subnet:
     """A class to handle subnets"""
 
     # ****************************************************************
-    # Attributes & Constructors
+    # INFO: Attributes & Constructors
 
     def __init__(
         self,
@@ -23,7 +24,7 @@ class Subnet:
 
         self.mask: IPv4Mask = None
 
-        # Try to extract mask if provided as CIDR notation
+        # INFO: Try to extract mask if provided as CIDR notation
         cidr = None
         if (type(address) is str) and ("/" in address):
             address, cidr = address.split("/")
@@ -55,7 +56,7 @@ class Subnet:
                 self.add_host(ip)
 
     # ****************************************************************
-    # Methods
+    # INFO: Methods
 
     def get_name(self) -> str:
         """Getter for the subnet name"""
@@ -75,8 +76,7 @@ class Subnet:
 
     def get_broadcast_address(self) -> IPv4:
         """Returns the broadcast address of the current subnet"""
-        broadcast_int = i_or(int(self.mask.get_wildcard()), int(self.address))
-        return IPv4(ip_int_to_str(broadcast_int))
+        return IPv4(ip_int_to_str(i_or(int(self.mask.get_wildcard()), int(self.address))))
 
     def set_mask(self, mask: Union[int, str, IPv4Mask]) -> None:
         """Setter for ip mask"""
@@ -96,6 +96,9 @@ class Subnet:
 
     def list_addresses(self) -> List[str]:
         """Lists all possible hosts in subnet"""
+
+        # NOTE: Starts with first address after subnet addres
+        # Ends with broadcast address
         start = self.address.get_address() + 1
         end = self.broadcast.get_address()
 
@@ -107,6 +110,7 @@ class Subnet:
         if not isinstance(host, IPv4):
             host = IPv4(host)
 
+        # NOTE: Checks if the address is not the subnet address nor the broadcast one
         if (
             self.contains(host)
             and (int(host) != int(self.address))
@@ -114,6 +118,7 @@ class Subnet:
         ):
             self.hosts[str(host)] = host
 
+    # INFO: Convertion methods
     def __str__(self) -> str:
         """Returns a string based on current instance"""
         return f"{self.address}/{self.mask.get_cidr()}"
@@ -128,4 +133,3 @@ class Subnet:
             "hosts": self.hosts,
             "broadcast_address": str(self.get_broadcast_address()),
         }
-
