@@ -20,7 +20,7 @@ setup(
     long_description_content_type="text/markdown",
     url='https://github.com/Melk0rr/Wepwawet',
     author='Jaufré Lallement',
-    author_email='lallement.j.pro@proton.me',
+    author_email='runner-me1k0r@proton.me',
     classifiers=['Intended Audience :: Developers',
                  'Topic :: Utilities',
                  'License :: Public Domain',
