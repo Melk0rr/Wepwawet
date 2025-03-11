@@ -37,7 +37,7 @@ def check_header(target: "URL") -> Dict:
                 if local_ssl_socket.ssl_certificate.state:
                     local_ssl_socket.get_certificate()
 
-                # Analyse header
+                # NOTE: Analyse header
                 try:
                     local_ssl_socket.header.analyse()
                     local_ssl_socket.header.print_result()
@@ -45,7 +45,7 @@ def check_header(target: "URL") -> Dict:
                 except Exception as e:
                     ColorPrint.red(f"{target.get_domain()}: error while analysing header {e}")
 
-                # Analyse certificate
+                # NOTE: Analyse certificate
                 try:
                     local_ssl_socket.ssl_certificate.analyse()
 
@@ -66,14 +66,14 @@ def check_header(target: "URL") -> Dict:
             "Certificate": local_ssl_socket.ssl_certificate.data,
             "Header": local_ssl_socket.header.data,
         }
-        # add header CSP values
+        # NOTE: Add header CSP values
 
         local_ssl_socket.close_socket()
 
     else:
         print(f"{target.get_domain()}: IP not resolved. Skipping...")
 
-    # add header CSP value
+    # NOTE: Add header CSP value
     response.update(Header.security_dict.items())
 
     return response

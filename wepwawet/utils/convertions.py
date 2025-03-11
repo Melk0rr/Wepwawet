@@ -5,12 +5,14 @@ from typing import Dict
 
 
 def seconds_to_str(t):
+    """Time in seconds into a readable string"""
     return "%d:%02d:%02d.%03d" % reduce(
         lambda ll, b: divmod(ll[0], b) + ll[1:], [(t * 1000,), 1000, 60, 60]
     )
 
 
 def tuple_to_dictionnary(t, parent, res: Dict = {}):
+    """Converts a tuple to a dictionary dah"""
     for a in t:
         if type(a) is tuple:
             return tuple_to_dictionnary(a, t, res)

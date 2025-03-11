@@ -12,7 +12,9 @@ class PortState(Enum):
 
 
 class Port:
-    """Port class"""
+
+    # ****************************************************************
+    # Attributes & Constructor
 
     def __init__(
         self,
@@ -21,12 +23,16 @@ class Port:
         state: PortState = PortState.OPENED,
     ):
         """Constructor"""
+
         if not isinstance(port_number, int):
             raise ValueError(f"Invalid port number: {port_number} !")
 
         self.number = port_number
         self.application = application
         self.state = state
+
+    # ****************************************************************
+    # Methods
 
     def get_number(self) -> int:
         """Getter for port number"""
@@ -42,6 +48,7 @@ class Port:
 
     def set_number(self, number: int) -> None:
         """Setter for port number"""
+
         if isinstance(number, int):
             self.number = number
 
@@ -59,3 +66,4 @@ class Port:
     def to_dictionary(self) -> Dict:
         """Returns a dictionary based on port number and application"""
         return {"number": self.number, "application": self.application}
+

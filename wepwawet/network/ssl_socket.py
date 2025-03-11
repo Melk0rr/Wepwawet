@@ -65,7 +65,7 @@ class MySocket:
 
     # ****************************************************************
     # INFO: Attributes & Constructor
-    def __init__(self, url: URL):
+    def __init__(self, url: URL) -> None:
         """Constructor"""
         if not isinstance(url, URL):
             raise ValueError("Provided url must be an instance of the URL class !")

@@ -19,6 +19,7 @@ def http_info(self, target: "URL", allow_redirects: bool = False) -> Dict:
         req = requests.get(target.get_host(), allow_redirects=allow_redirects)
         soup = BeautifulSoup(req.content, "html.parser")
 
+        # NOTE: Retreives HTTP status and website title (title can contain useful informations)
         http_status = req.status_code
         http_title = soup.title.text.replace("\n", "").replace("\t", " ")
 
@@ -30,3 +31,4 @@ def http_info(self, target: "URL", allow_redirects: bool = False) -> Dict:
         )
 
     return {"http_status": http_status, "http_title": http_title}
+

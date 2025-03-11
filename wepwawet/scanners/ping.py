@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from wepwawet.utils import ColorPrint
 
-out_function = {0: ColorPrint.green, 1: ColorPrint.red}
+out_function = [ColorPrint.green, ColorPrint.red]
 
 if TYPE_CHECKING:
     from wepwawet.network.url import URL
@@ -20,6 +20,7 @@ def ping(self, target: "URL") -> bool:
     if host_ip:
         print(f"{target.get_domain()}, pinging", end="...")
 
+        # NOTE: Not waiting too long
         ping = Popen(["ping", "-w", "100", host_ip], stderr=STDOUT, stdout=PIPE)
         ping.communicate()
 

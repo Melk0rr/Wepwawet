@@ -37,6 +37,5 @@ def geoloc(self, target: "URL") -> None:
 
     except Exception as e:
         self.handle_exception(
-            e,
-            f"Can't get geolocation for {target.get_domain()}. Make sure the target is accessible.",
+            f"geoloc::Can't get geolocation for {target.get_domain()}. Make sure the target is accessible\n{e}",
         )

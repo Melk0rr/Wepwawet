@@ -10,7 +10,7 @@ class Subnet:
     """A class to handle subnets"""
 
     # ****************************************************************
-    # INFO: Attributes & Constructors
+    # Attributes & Constructors
 
     def __init__(
         self,
@@ -56,7 +56,7 @@ class Subnet:
                 self.add_host(ip)
 
     # ****************************************************************
-    # INFO: Methods
+    # Methods
 
     def get_name(self) -> str:
         """Getter for the subnet name"""
@@ -133,3 +133,4 @@ class Subnet:
             "hosts": self.hosts,
             "broadcast_address": str(self.get_broadcast_address()),
         }
+

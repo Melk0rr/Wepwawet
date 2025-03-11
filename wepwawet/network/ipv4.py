@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .subnet import Subnet
 
 
+# INFO: Some helper functions
 def ip_str_to_int(ip: str) -> int:
     """Converts an ip address string into an int"""
     return int("".join([bin(int(x) + 256)[3:] for x in ip.split(".")]), 2)
@@ -27,7 +28,7 @@ def cidr_to_int(cidr: int) -> int:
     """Returns a mask integer value based on the given network length"""
     return (0xFFFFFFFF << (32 - cidr)) & 0xFFFFFFFF
 
-
+# INFO: Patterns for IP versions
 class IPVersion(Enum):
     IPV4 = {
         "pattern": r"^(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$"
@@ -59,7 +60,6 @@ class IPv4:
             raise ValueError(f"Invalid IPv4 address provided: {address}")
 
         self.address: int = ip_str_to_int(address)
-
         self.ports = {}
 
     # ****************************************************************
@@ -80,7 +80,7 @@ class IPv4:
     def set_open_ports(self, ports: Union[List[int], List[Port]]):
         """Set the open ports"""
 
-        # Clear the list of open ports
+        # NOTE: Clear the list of open ports
         self.ports = {}
 
         for p in ports:
@@ -125,6 +125,9 @@ class IPv4:
             int(net.get_address()), int(net.get_mask())
         )
 
+    # ****************************************************************
+    # Convertion methods
+
     def __int__(self) -> int:
         """Converts the current ip base into an integer"""
         return self.address
@@ -132,6 +135,9 @@ class IPv4:
     def __str__(self) -> str:
         """Converts the current ip base into a string"""
         return ip_int_to_str(self.address)
+
+    # ****************************************************************
+    # Static methods
 
     @staticmethod
     def resolve_from_hostname(hostname: str) -> str:
@@ -196,6 +202,9 @@ class IPv4Mask(IPv4):
 
         return super().__str__()
 
+    # ****************************************************************
+    # Static methods
+
     @staticmethod
     def get_netcidr(mask: str) -> int:
         """Static method to return CIDR notation for a given mask"""
@@ -212,10 +221,11 @@ class IPv4Mask(IPv4):
     @staticmethod
     def get_netmask(network_length: int) -> str:
         """Static method to return an ipv4 mask based on a network length"""
-        if not type(network_length) is int:
+        if type(network_length) is not int:
             raise ValueError("Network length must be an integer")
 
         if not 0 < network_length < 33:
             raise ValueError("Network length value must be between 1 and 32!")
 
         return ip_int_to_str(cidr_to_int(network_length))
+

@@ -25,18 +25,18 @@ def rows_2_dictionary(rows: List[str]) -> List[Dict]:
     s_index = -1
     for i in range(len(rows)):
         r = rows[i]
-        # Create a new dictionary for each separator row
+        # NOTE: Create a new dictionary for each separator row
         if len(r) == 0:
             s_index += 1
 
             if i < len(rows) - 1:
                 res.append({})
 
-        # Append data to dictionaries based on the separator index
+        # NOTE: Append data to dictionaries based on the separator index
         else:
             key, value = r.split(":", maxsplit=1)
 
-            # If the dictionary already contains the key : concatenate the two values
+            # WARN: If the dictionary already contains the key : concatenate the two values
             f_value = value.strip()
             if key in res[s_index]:
                 f_value = f"{res[s_index][key]}, {f_value}"
@@ -69,3 +69,4 @@ def whois(self, target: "URL") -> None:
 
     except Exception:
         ColorPrint.red(f"No data found for {target.get_domain()}")
+

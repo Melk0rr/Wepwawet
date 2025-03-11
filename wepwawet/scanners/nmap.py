@@ -5,12 +5,14 @@ from typing import TYPE_CHECKING, Dict
 import nmap3
 
 from wepwawet.network.port import Port
+from wepwawet.utils.color_print import ColorPrint
 
 if TYPE_CHECKING:
     from wepwawet.network.url import URL
 
 nmap = nmap3.Nmap()
 
+# INFO: Nmap command switch
 nmap_commands = {
     "dns-brute": nmap.nmap_dns_brute_script,
     "os": nmap.nmap_os_detection,
@@ -45,6 +47,7 @@ def nmap(self, target: "URL", command: str = "ver-detect") -> Dict:
 
         nmap_res = nmap_commands[command](target.get_ip().get_address())
 
+        # TODO: Handle various command behaviors
         if command == "ver-detect":
             set_target_ports(target, nmap_res)
             target_ports = target.get_ip().get_port_strings()
@@ -52,6 +55,6 @@ def nmap(self, target: "URL", command: str = "ver-detect") -> Dict:
             print(f"Found {len(target_ports)} ports on {target.get_domain()}:\n{target_ports_list}")
 
     else:
-        print(f"No ip to scan for {target.get_domain()}")
+        ColorPrint.red(f"No ip to scan for {target.get_domain()}")
 
     return nmap_res
