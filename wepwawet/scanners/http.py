@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 if TYPE_CHECKING:
     from wepwawet.network.url import URL
 
-def http_info(self, target: "URL") -> Dict:
+def http_info(self, target: "URL", allow_redirects: bool = False) -> Dict:
     """Performs a simple HTTP request to the given target"""
 
     http_status = None
@@ -15,7 +15,7 @@ def http_info(self, target: "URL") -> Dict:
     print(f"{target.get_domain()}, getting HTTP infos", end="...")
 
     try:
-        req = requests.get(target.get_host(), allow_redirects=False)
+        req = requests.get(target.get_host(), allow_redirects=allow_redirects)
         soup = BeautifulSoup(req.content, "html.parser")
 
         http_status = req.status_code
