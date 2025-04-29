@@ -5,15 +5,18 @@ import socket
 from typing import Dict, List
 from urllib.parse import urlparse, urlsplit
 
-from wepwawet.network.ipv4 import IPv4
-from wepwawet.utils import ColorPrint
+from wepwawet.utils.color_print import ColorPrint
+
+from .ipv4 import IPv4
 
 
+# TODO: Implement methods to use different scanners to centralize stuff
 class URL:
     """URL class implementation"""
 
     def __init__(self, url: str):
         """Constructor"""
+
         # Inject protocol if not there
         if not re.match(r"http(s?):", url):
             url = "http://" + url

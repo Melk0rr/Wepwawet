@@ -1,5 +1,3 @@
-# INFO: Helper class to handle TCP/UDP ports
-
 from enum import Enum
 from typing import Dict
 
