@@ -3,7 +3,7 @@
 from multiprocessing import Pool
 from typing import Dict, List
 
-from wepwawet.network import URL
+from wepwawet.network.url import URL
 from wepwawet.scanners import (
     ask_shodan,
     check_header,
@@ -14,7 +14,7 @@ from wepwawet.scanners import (
     ping,
     whois,
 )
-from wepwawet.utils import ColorPrint, export_csv, str_file_option_handle
+from wepwawet.utils import ColorPrint, FileHandler
 
 from .base import Base
 
@@ -31,7 +31,7 @@ class Target(Base):
         self.results: List[Dict] = []
         self.unique_targets: List[URL] = []
 
-        str_file_option_handle(self, "TARGET", "FILE")
+        self.handle_str_file_input("TARGET", "FILE")
         self.unique_targets = list(set(self.options["TARGET"]))
         print(f"Investigating {len(self.unique_targets)} hosts")
         print("Initializing...")
@@ -50,6 +50,29 @@ class Target(Base):
         url.resolve_ip()
 
         return url
+
+    def handle_str_file_input(self, string_option: str, file_option: str) -> None:
+        """
+        This function handles the initialization of a list-based option by checking if an existing option is provided as a file path.
+        If the `file_option` exists in the `self.options` dictionary, it reads the content of the specified file and splits it into lines,
+        filtering out any empty lines to create a list which is then assigned to the `string_option`.
+
+        If the `file_option` does not exist, it assumes that the option is provided as a comma-separated string. It splits this string by commas
+        and filters out any empty entries to create a list, which is then assigned to the `string_option`.
+
+        Args:
+            self (object)      : The instance of the class containing the options dictionary.
+            string_option (str): The key in the `self.options` dictionary where the resulting list should be stored.
+            file_option (str)  : The key in the `self.options` dictionary that, if exists, points to a file path.
+        """
+
+        args = (
+            FileHandler.import_txt(file_path=self.options[file_option])
+            if self.options[file_option]
+            else self.options[string_option].split(",")
+        )
+
+        self.options[string_option] = list(filter(None, args))
 
     def handle_exception(self, e, message="") -> None:
         """Function handling exception for the current class"""
@@ -114,4 +137,6 @@ class Target(Base):
 
         # Export results to CSV if option is provided
         if self.options["--export-csv"]:
-            export_csv()
+            FileHandler.export_csv(
+                data=self.results, file_path=self.options["--export-csv"], delimiter="|"
+            )
