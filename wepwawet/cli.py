@@ -39,12 +39,10 @@ import time
 from docopt import docopt
 
 import wepwawet.commands
-from wepwawet.banner import banner
-from wepwawet.utils.color_print import ColorPrint
-from wepwawet.utils.convertions import seconds_to_str
-from wepwawet.utils.stdouthook import StdOutHook
+from wepwawet.utils import ColorPrint, StdOutHook, TimeConverter
 
 from . import __version__ as VERSION
+from .banner import banner
 
 
 def main():
@@ -80,7 +78,7 @@ def main():
         command = wepwawet.commands.target.Target(options)
         command.run()
 
-        print(f"\nUrls infos search took {seconds_to_str(time.time() - start_time)}s")
+        print(f"\nUrls infos search took {TimeConverter.seconds_to_str(time.time() - start_time)}s")
 
         if options["--output"]:
             sys.stdout.write_out()
