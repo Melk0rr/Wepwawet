@@ -3,7 +3,7 @@
 from subprocess import PIPE, STDOUT, Popen
 from typing import TYPE_CHECKING
 
-from wepwawet.utils import ColorPrint
+from wepwawet.utils.color_print import ColorPrint
 
 out_function = [ColorPrint.green, ColorPrint.red]
 
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 def ping(self, target: "URL") -> bool:
     """Run ping command on the provided host"""
+
     response = 1
 
     host_ip = str(target.get_ip())

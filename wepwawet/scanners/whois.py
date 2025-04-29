@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING, Dict, List
 import requests
 from bs4 import BeautifulSoup
 
-from wepwawet.utils import ColorPrint, join_dictionary_items
+from wepwawet.utils import ColorPrint, CustomDict
 
 if TYPE_CHECKING:
-    from wepwawet.network import URL
+    from wepwawet.network.url import URL
 
 BASE_URL = "https://who.is/whois/"
 
@@ -55,18 +55,19 @@ def whois(self, target: "URL") -> None:
         req = requests.get(url)
         soup = BeautifulSoup(req.content, "html.parser")
 
+        try:
+            raw_data = soup.find_all("pre")[0].text
+            rows = [r for r in raw_data.split("\n") if is_valid_row(r)]
+            data = rows_2_dictionary(rows)
+
+            for d in data:
+                print(CustomDict.join_dictionary_items(d, "\n"))
+                print("\n")
+
+        except Exception:
+            ColorPrint.red(f"No data found for {target.get_domain()}")
+
     except ConnectionError:
         ColorPrint.red(f"Could not connect to whois for domain {target.get_domain()}")
 
-    try:
-        raw_data = soup.find_all("pre")[0].text
-        rows = [r for r in raw_data.split("\n") if is_valid_row(r)]
-        data = rows_2_dictionary(rows)
-
-        for d in data:
-            print(join_dictionary_items(d, "\n"))
-            print("\n")
-
-    except Exception:
-        ColorPrint.red(f"No data found for {target.get_domain()}")
 

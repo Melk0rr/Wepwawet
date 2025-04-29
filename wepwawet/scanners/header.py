@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING, Dict
 
 from wepwawet.network import Header, SSLSocket
-from wepwawet.utils import ColorPrint
+from wepwawet.utils.color_print import ColorPrint
 
 if TYPE_CHECKING:
     from wepwawet.network.url import URL

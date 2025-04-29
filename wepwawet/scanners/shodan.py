@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, Dict
 
 import requests
 
-from wepwawet.network import Port
+from wepwawet.network.port import Port
 
 if TYPE_CHECKING:
-    from wepwawet.network import URL
+    from wepwawet.network.url import URL
 
 
 def set_url_ports(target: "URL", shodan_request: Dict) -> None:
@@ -58,4 +58,3 @@ def ask_shodan(self, target: "URL") -> Dict:
     }
 
     return shodan_res
-

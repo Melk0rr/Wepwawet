@@ -1,15 +1,17 @@
 # INFO: Module to check TLS status on URL
+
 from typing import TYPE_CHECKING, Dict
 
 from wepwawet.network.ssl_socket import SSLSocket
-from wepwawet.utils import ColorPrint
+from wepwawet.utils.color_print import ColorPrint
 
 if TYPE_CHECKING:
-    from wepwawet.network import URL
+    from wepwawet.network.url import URL
 
 
 def check_tls(target: "URL") -> Dict:
     """Main TLS function : Check TLS"""
+
     tls_response = {"TLS1.0": "", "TLS1.1": "", "TLS1.2": "", "TLS1.3": ""}
 
     if target.get_ip():
