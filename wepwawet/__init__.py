@@ -1,4 +1,4 @@
-__version__ = "a1.9.0"
+__version__ = "0.9.1"
 
 # TODO: docstrings
 # TODO: cleanup
