@@ -1,6 +1,6 @@
 import socket
 import ssl
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from wepwawet.utils.color_print import ColorPrint
 
@@ -24,7 +24,7 @@ class Header:
     # ****************************************************************
     # Attributes & Constructors
 
-    security_dict = {
+    security_dict: Dict[str ,Union[str, List[str]]] = {
         "Content-Security-Policy": "[NONE]",
         "Strict-Transport-Security": "[NONE]",
         "X-Content-Type-Options": "[NONE]",
@@ -41,6 +41,7 @@ class Header:
 
     def look_for(self, security: str) -> Union[str, List[str]]:
         """Check if the website implement security best practices into data"""
+
         search = [el for el in self.data if security in el]
         if len(search) > 0:
             return search
@@ -64,7 +65,6 @@ class Header:
 
 
 class MySocket:
-
     # ****************************************************************
     # Attributes & Constructor
     def __init__(self, url: "URL") -> None:
@@ -303,4 +303,3 @@ class SSLSocket(MySocket):
                 self.close_socket()
 
         return res
-
